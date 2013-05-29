@@ -28,6 +28,10 @@
 (require 'popup)
 (require 'artist)
 
+(defvar psw-in-window-center nil
+  "Non-nil means horizontal locate popup menu in the window center.
+Locate popup menu in the `fill-column' center otherwise.")
+
 (defun psw-filter (condp lst)
   (delq nil
         (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
@@ -39,41 +43,48 @@
 
 (defun psw-get-buffer-list ()
   (psw-filter (lambda (a) (and
-                     (buffer-live-p a)
-                     (not (minibufferp a))
-                     (not (equal (substring (buffer-name a) 0 2) " *"))))
-             (buffer-list)))
+                      (buffer-live-p a)
+                      (not (minibufferp a))
+                      (not (equal (substring (buffer-name a) 0 2) " *"))))
+              (buffer-list)))
 
 (defun psw-get-buffer (&optional window-center)
   (let* ((buf-list (psw-get-buffer-list))
-         (menu-height (min 15 (length buf-list)))
-         (x (/ (- (if window-center
+         (menu-height (min 15 (length buf-list) (- (window-height) 4)))
+         (x (/ (- (if (or psw-in-window-center window-center)
                       (window-width)
                     fill-column)
-                  (apply 'max (mapcar
-                               (lambda (a) (length (buffer-name a))) buf-list))) 2))
-         (y (+ (psw-window-line-number)
+                  (apply 'max (mapcar (lambda (a)
+                                        (length (buffer-name a)))
+                                      buf-list))) 2))
+         (y (+ (- (psw-window-line-number) 2)
                (/ (- (window-height) menu-height) 2)))
-         (pos (save-excursion
-                (artist-move-to-xy x y)
-                (point))))
-    (popup-menu* buf-list
-                 :point pos
-                 :scroll-bar t
-                 :margin-left 1
-                 :margin-right 1
-                 :isearch t)))
+         (modified (buffer-modified-p))
+         (saved-text (buffer-substring (window-start) (window-end)))
+         (old-pos (point)))
+    (unwind-protect
+        (let* ((inhibit-read-only t)
+               (menu-pos (save-excursion
+                           (artist-move-to-xy x y)
+                           (point)))
+               (target-buffer (popup-menu* buf-list
+                                           :point menu-pos
+                                           :height menu-height
+                                           :scroll-bar t
+                                           :margin-left 1
+                                           :margin-right 1
+                                           :around nil
+                                           :isearch t)))
+          target-buffer)
+      (when (buffer-modified-p)
+        (delete-region (window-start) (window-end))
+        (insert saved-text)
+        (goto-char old-pos)
+        (set-buffer-modified-p modified)))))
 
 (defun psw-switch ()
   (interactive)
   (switch-to-buffer
-   (let ((saved-text (buffer-substring (window-start) (window-end)))
-         (pos (point))
-         (new-buffer (psw-get-buffer)))
-     (when (buffer-modified-p)
-       (delete-region (window-start) (window-end))
-       (insert saved-text)
-       (goto-char pos))
-     new-buffer)))
+   (psw-get-buffer)))
 
 (provide 'popup-switcher)
