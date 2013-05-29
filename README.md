@@ -5,7 +5,7 @@ It uses popup lib for better sense.
 
 ## Installation
 
-Add MELPA (of not yet) to your package-archives list:
+Add MELPA (of not yet) to your `package-archives` list:
 
 ```lisp
 (require 'package)
@@ -22,14 +22,14 @@ Load popup-switcher:
 
 ## Configuration
 
-Non-nil psw-in-window-center means horizontal locate popup menu in the window
-center.  Locate popup menu in the `fill-column' center otherwise (by default).
+Non-nil `psw-in-window-center` means horizontal locate popup menu in the window
+center.  Locate popup menu in the `fill-column` center otherwise (by default).
 
 ```lisp
 (setq psw-in-window-center t)
 ```
 
-Add a hotkey to 'psw-switch to you taste, e.g.:
+Add a hotkey to `psw-switch` to you taste, e.g.:
 
 ```lisp
 (global-set-key [f2] 'psw-switch)
@@ -42,7 +42,7 @@ from the name of buffer of interest (since isearch is enabled on start) to
 filter buffers list, use arrow keys and <kbd>[RET]</kbd> or mouse to select
 buffer.
 
-![popup-switcher-screenshot](https://raw.github.com/kostefey/popup-switcher/master/popup-switcher.png)
+![popup-switcher-screenshot](https://raw.github.com/kostafey/popup-switcher/master/popup-switcher.png)
 
 ## Requirements:
 
