@@ -14,6 +14,10 @@ Add MELPA (of not yet) to your `package-archives` list:
 (package-initialize)
 ```
 
+Then you can install popup-switcher with the following command:
+
+<kbd>M-x package-install [RET] popup-switcher [RET]</kbd>
+
 Load popup-switcher:
 
 ```lisp
