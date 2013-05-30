@@ -46,7 +46,7 @@ from the name of buffer of interest (since isearch is enabled on start) to
 filter buffers list, use arrow keys and <kbd>[RET]</kbd> or mouse to select
 buffer.
 
-![popup-switcher-screenshot](https://dl.dropboxusercontent.com/u/820526/popup-switcher-orig.png)
+![popup-switcher-screenshot](https://dl.dropboxusercontent.com/u/820526/popup-switcher.png)
 
 ## Requirements:
 
