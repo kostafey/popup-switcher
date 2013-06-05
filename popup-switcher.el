@@ -5,8 +5,7 @@
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers
-;; Version: 20130529.1
-;; X-Original-Version: DEV
+;; Version: 0.1
 ;; Package-Requires: ((popup "0.5.0"))
 
 ;; This file is not part of GNU Emacs.
@@ -48,14 +47,19 @@ Locate popup menu in the `fill-column' center otherwise.")
                       (not (equal (substring (buffer-name a) 0 2) " *"))))
               (buffer-list)))
 
-(defun psw-get-buffer (&optional window-center)
-  (let* ((buf-list (psw-get-buffer-list))
+(defun psw-popup-menu (selection-list item-name-getter &optional window-center)
+  "Popup selection menu.
+`selection-list' - list of items to select.
+`item-name-getter' - function for item to string conversion.
+`psw-in-window-center' - if t, overrides `psw-in-window-center' var value."
+  (let* ((buf-list selection-list)
          (menu-height (min 15 (length buf-list) (- (window-height) 4)))
          (x (/ (- (if (or psw-in-window-center window-center)
                       (window-width)
                     fill-column)
                   (apply 'max (mapcar (lambda (a)
-                                        (length (buffer-name a)))
+                                        (length
+                                         (apply item-name-getter (list a))))
                                       buf-list))) 2))
          (y (+ (- (psw-window-line-number) 2)
                (/ (- (window-height) menu-height) 2)))
@@ -67,24 +71,29 @@ Locate popup menu in the `fill-column' center otherwise.")
                (menu-pos (save-excursion
                            (artist-move-to-xy x y)
                            (point)))
-               (target-buffer (popup-menu* buf-list
-                                           :point menu-pos
-                                           :height menu-height
-                                           :scroll-bar t
-                                           :margin-left 1
-                                           :margin-right 1
-                                           :around nil
-                                           :isearch t)))
-          target-buffer)
+               (target-item (popup-menu* buf-list
+                                         :point menu-pos
+                                         :height menu-height
+                                         :scroll-bar t
+                                         :margin-left 1
+                                         :margin-right 1
+                                         :around nil
+                                         :isearch t)))
+          target-item)
       (when (buffer-modified-p)
         (delete-region (window-start) (window-end))
         (insert saved-text)
         (goto-char old-pos)
         (set-buffer-modified-p modified)))))
 
-(defun psw-switch ()
+(defun psw-switch-buffer ()
   (interactive)
   (switch-to-buffer
-   (psw-get-buffer)))
+   (psw-popup-menu (psw-get-buffer-list) 'buffer-name)))
+
+(defun psw-switch-recentf ()
+  (interactive)
+  (find-file
+   (psw-popup-menu recentf-list 'identity)))
 
 (provide 'popup-switcher)

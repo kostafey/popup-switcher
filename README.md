@@ -36,12 +36,12 @@ center.  Locate popup menu in the `fill-column` center otherwise (by default).
 Add a hotkey to `psw-switch` to you taste, e.g.:
 
 ```lisp
-(global-set-key [f2] 'psw-switch)
+(global-set-key [f2] 'psw-switch-buffer)
 ```
 
 ## Usage
 
-Run <kbd>M-x psw-switch [RET]</kbd> (or your selected key).  Type some letters
+Run <kbd>M-x psw-switch-buffer [RET]</kbd> (or your selected key).  Type some letters
 from the name of buffer of interest (since isearch is enabled on start) to
 filter buffers list, use arrow keys and <kbd>[RET]</kbd> or mouse to select
 buffer.
