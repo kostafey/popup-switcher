@@ -68,10 +68,10 @@ Locate popup menu in the `fill-column' center otherwise.")
                (/ (- (window-height) menu-height) 2)))
          (modified (buffer-modified-p))
          (saved-text (buffer-substring (window-start) (window-end)))
-         (old-pos (point)))
+         (old-pos (point))
+         (inhibit-read-only t))
     (unwind-protect
-        (let* ((inhibit-read-only t)
-               (menu-pos (save-excursion
+        (let* ((menu-pos (save-excursion
                            (artist-move-to-xy x y)
                            (point)))
                (target-item (popup-menu* buf-list
