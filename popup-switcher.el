@@ -31,6 +31,9 @@
   "Non-nil means horizontal locate popup menu in the window center.
 Locate popup menu in the `fill-column' center otherwise.")
 
+(defcustom psw-after-switch-hook nil
+  "Hook runs after buffer switch")
+
 (defun psw-filter (condp lst)
   (delq nil
         (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
@@ -86,14 +89,17 @@ Locate popup menu in the `fill-column' center otherwise.")
         (goto-char old-pos)
         (set-buffer-modified-p modified)))))
 
+
 (defun psw-switch-buffer ()
   (interactive)
   (switch-to-buffer
-   (psw-popup-menu (psw-get-buffer-list) 'buffer-name)))
+   (psw-popup-menu (psw-get-buffer-list) 'buffer-name))
+  (run-hooks 'psw-after-switch-hook))
 
 (defun psw-switch-recentf ()
   (interactive)
   (find-file
-   (psw-popup-menu recentf-list 'identity)))
+   (psw-popup-menu recentf-list 'identity))
+  (run-hooks 'psw-after-switch-hook))
 
 (provide 'popup-switcher)
