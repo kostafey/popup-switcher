@@ -39,7 +39,31 @@ Add a hotkey to `psw-switch` to you taste, e.g.:
 (global-set-key [f2] 'psw-switch-buffer)
 ```
 
+To navigate through functions/methods names you should add the most recent
+`CEDET` and load `eassist` lib. This feature is optional, and popup-switcher can
+operate without `CEDET` (and therefore without navigation possibility through
+functions/methods).
+
+```lisp
+;; Activate semantic
+(semantic-mode 1)
+ 
+;; Load contrib library
+(add-to-list 'load-path "~/.emacs.d/cedet/contrib/")
+(require 'eassist)
+ 
+(eval-after-load "eassist"
+  '(global-set-key [f3] 'psw-switch-function))
+```
+
 ## Usage
+
+List of interactive functions:
+
+* `psw-switch-buffer` -- switch buffers through popup menu.
+* `psw-switch-recentf` -- switch recent files.
+* `psw-switch-function` -- switch (navigate) through functions in the current
+  buffer *(optional)*.
 
 Run <kbd>M-x psw-switch-buffer [RET]</kbd> (or your selected key).  Type some letters
 from the name of buffer of interest (since isearch is enabled on start) to
@@ -51,7 +75,8 @@ buffer.
 ## Requirements:
 
 * [GNU Emacs](http://www.gnu.org/software/emacs/emacs.html) 24.
-* [popup](https://github.com/auto-complete/popup-el)
+* [popup](https://github.com/auto-complete/popup-el).
+* [CEDET](http://cedet.sourceforge.net/) *(optional)*.
 
 ## License
 

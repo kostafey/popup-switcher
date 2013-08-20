@@ -4,8 +4,8 @@
 
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
-;; Keywords: popup, switch, buffers
-;; Version: 0.1
+;; Keywords: popup, switch, buffers, functions
+;; Version: 0.2
 ;; Package-Requires: ((popup "0.5.0"))
 
 ;; This file is not part of GNU Emacs.
@@ -55,15 +55,12 @@ Locate popup menu in the `fill-column' center otherwise.")
 `selection-list' - list of items to select.
 `item-name-getter' - function for item to string conversion.
 `psw-in-window-center' - if t, overrides `psw-in-window-center' var value."
-  (let* ((buf-list selection-list)
-         (menu-height (min 15 (length buf-list) (- (window-height) 4)))
+  (let* ((item-names-list (mapcar item-name-getter selection-list))
+         (menu-height (min 15 (length item-names-list) (- (window-height) 4)))
          (x (/ (- (if (or psw-in-window-center window-center)
                       (window-width)
                     fill-column)
-                  (apply 'max (mapcar (lambda (a)
-                                        (length
-                                         (apply item-name-getter (list a))))
-                                      buf-list))) 2))
+                  (apply 'max (mapcar 'length item-names-list))) 2))
          (y (+ (- (psw-window-line-number) 2)
                (/ (- (window-height) menu-height) 2)))
          (modified (buffer-modified-p))
@@ -74,15 +71,23 @@ Locate popup menu in the `fill-column' center otherwise.")
         (let* ((menu-pos (save-excursion
                            (artist-move-to-xy x y)
                            (point)))
-               (target-item (popup-menu* buf-list
-                                         :point menu-pos
-                                         :height menu-height
-                                         :scroll-bar t
-                                         :margin-left 1
-                                         :margin-right 1
-                                         :around nil
-                                         :isearch t)))
-          target-item)
+               (target-item-name (popup-menu* item-names-list
+                                              :point menu-pos
+                                              :height menu-height
+                                              :scroll-bar t
+                                              :margin-left 1
+                                              :margin-right 1
+                                              :around nil
+                                              :isearch t))
+               (items-map nil))
+          (mapc (lambda (a)
+                  (setq items-map
+                        (lax-plist-put
+                         items-map
+                         (apply item-name-getter (list a)) a)))
+                selection-list)
+          (let ((target-item (lax-plist-get items-map target-item-name)))
+            target-item))
       (when (buffer-modified-p)
         (delete-region (window-start) (window-end))
         (insert saved-text)
@@ -101,5 +106,28 @@ Locate popup menu in the `fill-column' center otherwise.")
   (find-file
    (psw-popup-menu recentf-list 'identity))
   (run-hooks 'psw-after-switch-hook))
+
+(eval-after-load "eassist"
+  '(progn
+     ;;
+     (defun psw-eassist-list-parser (eassist-tags)
+       "Return list of pairs: first - function name, second - it's position."
+       (let* ((method-tags (eassist-function-tags))
+              (method-triplets (mapcar
+                                'eassist-function-string-triplet method-tags)))
+         (mapcar* '(lambda (name position)
+                     (list name position))
+                  (mapcar 'caddr method-triplets)
+                  (mapcar 'semantic-tag-start method-tags))))
+     ;;
+     (defun psw-switch-function ()
+       (interactive)
+       (setq eassist-buffer (current-buffer))
+       (setq eassist-current-tag (semantic-current-tag))
+       (goto-char
+        (cadr
+         (psw-popup-menu (psw-eassist-list-parser (eassist-function-tags))
+                         'car)))
+       (run-hooks 'psw-after-switch-hook))))
 
 (provide 'popup-switcher)
