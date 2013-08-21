@@ -50,13 +50,17 @@ Locate popup menu in the `fill-column' center otherwise.")
                       (not (equal (substring (buffer-name a) 0 2) " *"))))
               (buffer-list)))
 
-(defun psw-popup-menu (selection-list item-name-getter &optional window-center)
+;; (psw-popup-menu (mapcar (lambda(a) (format "%s" (intern (buffer-name a))))
+;;                         (psw-get-buffer-list)))
+;; (remove-text-properties start end '(face nil))
+;; (concat  (intern (buffer-name (current-buffer))))
+
+(defun psw-popup-menu (item-names-list &optional window-center)
   "Popup selection menu.
 `selection-list' - list of items to select.
 `item-name-getter' - function for item to string conversion.
 `psw-in-window-center' - if t, overrides `psw-in-window-center' var value."
-  (let* ((item-names-list (mapcar item-name-getter selection-list))
-         (menu-height (min 15 (length item-names-list) (- (window-height) 4)))
+  (let* ((menu-height (min 15 (length item-names-list) (- (window-height) 4)))
          (x (/ (- (if (or psw-in-window-center window-center)
                       (window-width)
                     fill-column)
@@ -78,16 +82,8 @@ Locate popup menu in the `fill-column' center otherwise.")
                                               :margin-left 1
                                               :margin-right 1
                                               :around nil
-                                              :isearch t))
-               (items-map nil))
-          (mapc (lambda (a)
-                  (setq items-map
-                        (lax-plist-put
-                         items-map
-                         (apply item-name-getter (list a)) a)))
-                selection-list)
-          (let ((target-item (lax-plist-get items-map target-item-name)))
-            target-item))
+                                              :isearch t)))
+          target-item-name)
       (when (buffer-modified-p)
         (delete-region (window-start) (window-end))
         (insert saved-text)
@@ -95,16 +91,35 @@ Locate popup menu in the `fill-column' center otherwise.")
         (set-buffer-modified-p modified)))))
 
 
+(defun psw-get-plain-string (properties-string)
+  (format "%s" (intern properties-string)))
+
+(defun zip (x y)
+  (mapcar* #'list (setcdr (last x) x) y))
+
+(defun flatten (list-of-lists)
+  (apply #'append list-of-lists))
+
+(defun* psw-get-item-by-name (&key item-names-list items-list target-item-name)
+  (let ((items-map (flatten (zip item-names-list items-list))))
+    ;; (mapc (lambda (a)
+    ;;         (setq items-map
+    ;;               (lax-plist-put items-map (funcall item-name-getter a) a)))
+    ;;       items-list)
+    (lax-plist-get items-map target-item-name)))
+
 (defun psw-switch-buffer ()
   (interactive)
   (switch-to-buffer
-   (psw-popup-menu (psw-get-buffer-list) 'buffer-name))
+   (psw-popup-menu (mapcar
+                    (lambda (b) (psw-get-plain-string (buffer-name b)))
+                    (psw-get-buffer-list))))
   (run-hooks 'psw-after-switch-hook))
 
 (defun psw-switch-recentf ()
   (interactive)
   (find-file
-   (psw-popup-menu recentf-list 'identity))
+   (psw-popup-menu (mapcar 'psw-get-plain-string recentf-list)))
   (run-hooks 'psw-after-switch-hook))
 
 (eval-after-load "eassist"
@@ -124,10 +139,16 @@ Locate popup menu in the `fill-column' center otherwise.")
        (interactive)
        (setq eassist-buffer (current-buffer))
        (setq eassist-current-tag (semantic-current-tag))
-       (goto-char
-        (cadr
-         (psw-popup-menu (psw-eassist-list-parser (eassist-function-tags))
-                         'car)))
+       (let* ((items-list (psw-eassist-list-parser (eassist-function-tags)))
+              (item-names-list (mapcar
+                                (lambda (a) (psw-get-plain-string (car a)))
+                                items-list)))
+         (goto-char
+          (cadr
+           (psw-get-item-by-name
+            :item-names-list item-names-list
+            :items-list items-list
+            :target-item-name (psw-popup-menu item-names-list)))))
        (run-hooks 'psw-after-switch-hook))))
 
 (provide 'popup-switcher)
