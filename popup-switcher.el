@@ -52,8 +52,7 @@ Locate popup menu in the `fill-column' center otherwise.")
 
 (defun psw-popup-menu (item-names-list &optional window-center)
   "Popup selection menu.
-`selection-list' - list of items to select.
-`item-name-getter' - function for item to string conversion.
+`item-names-list' - list of item names to select.
 `psw-in-window-center' - if t, overrides `psw-in-window-center' var value."
   (let* ((menu-height (min 15 (length item-names-list) (- (window-height) 4)))
          (x (/ (- (if (or psw-in-window-center window-center)
