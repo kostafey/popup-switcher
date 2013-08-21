@@ -50,11 +50,6 @@ Locate popup menu in the `fill-column' center otherwise.")
                       (not (equal (substring (buffer-name a) 0 2) " *"))))
               (buffer-list)))
 
-;; (psw-popup-menu (mapcar (lambda(a) (format "%s" (intern (buffer-name a))))
-;;                         (psw-get-buffer-list)))
-;; (remove-text-properties start end '(face nil))
-;; (concat  (intern (buffer-name (current-buffer))))
-
 (defun psw-popup-menu (item-names-list &optional window-center)
   "Popup selection menu.
 `selection-list' - list of items to select.
@@ -102,10 +97,6 @@ Locate popup menu in the `fill-column' center otherwise.")
 
 (defun* psw-get-item-by-name (&key item-names-list items-list target-item-name)
   (let ((items-map (flatten (zip item-names-list items-list))))
-    ;; (mapc (lambda (a)
-    ;;         (setq items-map
-    ;;               (lax-plist-put items-map (funcall item-name-getter a) a)))
-    ;;       items-list)
     (lax-plist-get items-map target-item-name)))
 
 (defun psw-switch-buffer ()
