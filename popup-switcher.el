@@ -5,7 +5,7 @@
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers, functions
-;; Version: 0.2
+;; Version: 0.2.1
 ;; Package-Requires: ((popup "0.5.0"))
 
 ;; This file is not part of GNU Emacs.
@@ -87,32 +87,62 @@ Locate popup menu in the `fill-column' center otherwise.")
         (set-buffer-modified-p modified)))))
 
 
-(defun psw-get-plain-string (properties-string)
-  (format "%s" (intern properties-string)))
-
 (defun zip (x y)
   (mapcar* #'list (setcdr (last x) x) y))
 
 (defun flatten (list-of-lists)
   (apply #'append list-of-lists))
 
+(defun compose (&rest funs)
+  "Return function composed of FUNS."
+  (lexical-let ((lex-funs funs))
+    (lambda (&rest args)
+      (reduce 'funcall (butlast lex-funs)
+              :from-end t
+              :initial-value (apply (car (last lex-funs)) args)))))
+
+(defun psw-get-plain-string (properties-string)
+  "Remove text properties from the string."
+  (format "%s" (intern properties-string)))
+
 (defun* psw-get-item-by-name (&key item-names-list items-list target-item-name)
+  "Return the item by it's name."
   (let ((items-map (flatten (zip item-names-list items-list))))
     (lax-plist-get items-map target-item-name)))
 
+(defun* psw-switcher (&key
+                      items-list
+                      item-name-getter
+                      switcher)
+  "Simplify create new popup switchers.
+`items-list' - the essence items list to select.
+`item-name-getter' - function to convert each item to it's text representation.
+`switcher' - function, that describes what do with the selected item."
+  (let ((item-names-list (mapcar
+                          (lambda (x) (funcall
+                                  (compose 'psw-get-plain-string
+                                           item-name-getter) x))
+                          items-list)))
+    (funcall switcher
+             (psw-get-item-by-name
+              :item-names-list item-names-list
+              :items-list items-list
+              :target-item-name (psw-popup-menu item-names-list))))
+  (run-hooks 'psw-after-switch-hook))
+
 (defun psw-switch-buffer ()
   (interactive)
-  (switch-to-buffer
-   (psw-popup-menu (mapcar
-                    (lambda (b) (psw-get-plain-string (buffer-name b)))
-                    (psw-get-buffer-list))))
-  (run-hooks 'psw-after-switch-hook))
+  (psw-switcher
+   :items-list (psw-get-buffer-list)
+   :item-name-getter 'buffer-name
+   :switcher 'switch-to-buffer))
 
 (defun psw-switch-recentf ()
   (interactive)
-  (find-file
-   (psw-popup-menu (mapcar 'psw-get-plain-string recentf-list)))
-  (run-hooks 'psw-after-switch-hook))
+  (psw-switcher
+   :items-list recentf-list
+   :item-name-getter 'identity
+   :switcher 'find-file))
 
 (eval-after-load "eassist"
   '(progn
@@ -131,16 +161,9 @@ Locate popup menu in the `fill-column' center otherwise.")
        (interactive)
        (setq eassist-buffer (current-buffer))
        (setq eassist-current-tag (semantic-current-tag))
-       (let* ((items-list (psw-eassist-list-parser (eassist-function-tags)))
-              (item-names-list (mapcar
-                                (lambda (a) (psw-get-plain-string (car a)))
-                                items-list)))
-         (goto-char
-          (cadr
-           (psw-get-item-by-name
-            :item-names-list item-names-list
-            :items-list items-list
-            :target-item-name (psw-popup-menu item-names-list)))))
-       (run-hooks 'psw-after-switch-hook))))
+       (psw-switcher
+        :items-list (psw-eassist-list-parser (eassist-function-tags))
+        :item-name-getter 'car
+        :switcher (compose 'goto-char 'cadr)))))
 
 (provide 'popup-switcher)
