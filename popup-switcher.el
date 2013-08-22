@@ -146,11 +146,10 @@ Locate popup menu in the `fill-column' center otherwise.")
 (eval-after-load "eassist"
   '(progn
      ;;
-     (defun psw-eassist-list-parser (eassist-tags)
+     (defun psw-eassist-list-parser (method-tags)
        "Return list of pairs: first - function name, second - it's position."
-       (let* ((method-tags (eassist-function-tags))
-              (method-triplets (mapcar
-                                'eassist-function-string-triplet method-tags)))
+       (let ((method-triplets (mapcar
+                               'eassist-function-string-triplet method-tags)))
          (mapcar* '(lambda (name position)
                      (list name position))
                   (mapcar 'caddr method-triplets)
