@@ -24,8 +24,11 @@
 ;; along with this program; if not, write to the Free Software Foundation,
 ;; Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.  */
 
+(eval-when-compile (require 'cl))
+
 (require 'popup)
 (require 'artist)
+(require 'recentf)
 
 (defvar psw-in-window-center nil
   "Non-nil means horizontal locate popup menu in the window center.
@@ -34,21 +37,15 @@ Locate popup menu in the `fill-column' center otherwise.")
 (defcustom psw-after-switch-hook nil
   "Hook runs after buffer switch")
 
-(defun psw-filter (condp lst)
-  (delq nil
-        (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
-
 (defun psw-window-line-number ()
   (save-excursion
     (goto-char (window-start))
     (line-number-at-pos)))
 
 (defun psw-get-buffer-list ()
-  (psw-filter (lambda (a) (and
-                      (buffer-live-p a)
-                      (not (minibufferp a))
-                      (not (equal (substring (buffer-name a) 0 2) " *"))))
-              (buffer-list)))
+  (remove-if (lambda (buf) (or (minibufferp buf)
+                               (equal (substring (buffer-name buf) 0 2) " *")))
+             (buffer-list)))
 
 (defun psw-popup-menu (item-names-list &optional window-center)
   "Popup selection menu.
@@ -87,13 +84,13 @@ Locate popup menu in the `fill-column' center otherwise.")
         (set-buffer-modified-p modified)))))
 
 
-(defun zip (x y)
+(defun psw-zip (x y)
   (mapcar* #'list (setcdr (last x) x) y))
 
-(defun flatten (list-of-lists)
+(defun psw-flatten (list-of-lists)
   (apply #'append list-of-lists))
 
-(defun compose (&rest funs)
+(defun psw-compose (&rest funs)
   "Return function composed of FUNS."
   (lexical-let ((lex-funs funs))
     (lambda (&rest args)
@@ -107,7 +104,7 @@ Locate popup menu in the `fill-column' center otherwise.")
 
 (defun* psw-get-item-by-name (&key item-names-list items-list target-item-name)
   "Return the item by it's name."
-  (let ((items-map (flatten (zip item-names-list items-list))))
+  (let ((items-map (psw-flatten (psw-zip item-names-list items-list))))
     (lax-plist-get items-map target-item-name)))
 
 (defun* psw-switcher (&key
@@ -120,8 +117,8 @@ Locate popup menu in the `fill-column' center otherwise.")
 `switcher' - function, that describes what do with the selected item."
   (let ((item-names-list (mapcar
                           (lambda (x) (funcall
-                                  (compose 'psw-get-plain-string
-                                           item-name-getter) x))
+                                       (psw-compose 'psw-get-plain-string
+                                                item-name-getter) x))
                           items-list)))
     (funcall switcher
              (psw-get-item-by-name
@@ -130,6 +127,7 @@ Locate popup menu in the `fill-column' center otherwise.")
               :target-item-name (psw-popup-menu item-names-list))))
   (run-hooks 'psw-after-switch-hook))
 
+;;;###autoload
 (defun psw-switch-buffer ()
   (interactive)
   (psw-switcher
@@ -137,6 +135,7 @@ Locate popup menu in the `fill-column' center otherwise.")
    :item-name-getter 'buffer-name
    :switcher 'switch-to-buffer))
 
+;;;###autoload
 (defun psw-switch-recentf ()
   (interactive)
   (psw-switcher
@@ -164,6 +163,8 @@ Locate popup menu in the `fill-column' center otherwise.")
        (psw-switcher
         :items-list (psw-eassist-list-parser (eassist-function-tags))
         :item-name-getter 'car
-        :switcher (compose 'goto-char 'cadr)))))
+        :switcher (psw-compose 'goto-char 'cadr)))))
 
 (provide 'popup-switcher)
+
+;;; popup-switcher.el ends here
