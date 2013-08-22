@@ -5,8 +5,7 @@
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers, functions
-;; Version: 20130821.1909
-;; X-Original-Version: 0.2.1
+;; Version: 0.2.1
 ;; Package-Requires: ((popup "0.5.0"))
 
 ;; This file is not part of GNU Emacs.
