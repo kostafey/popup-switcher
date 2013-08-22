@@ -132,8 +132,7 @@ Locate popup menu in the `fill-column' center otherwise.")
   (psw-switcher
    :items-list (psw-get-buffer-list)
    :item-name-getter 'buffer-name
-   :switcher '
-   switch-to-buffer))
+   :switcher 'switch-to-buffer))
 
 ;;;###autoload
 (defun psw-switch-recentf ()
