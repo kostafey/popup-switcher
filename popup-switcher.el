@@ -5,7 +5,7 @@
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers, functions
-;; Version: 0.2.1
+;; Version: 0.2.2
 ;; Package-Requires: ((popup "0.5.0"))
 
 ;; This file is not part of GNU Emacs.
@@ -84,6 +84,8 @@ Locate popup menu in the `fill-column' center otherwise.")
         (set-buffer-modified-p modified)))))
 
 
+(defun psw-nil? (x) (equal nil x))
+
 (defun psw-zip (x y)
   (mapcar* #'list (setcdr (last x) x) y))
 
@@ -155,12 +157,32 @@ Locate popup menu in the `fill-column' center otherwise.")
                   (mapcar 'caddr method-triplets)
                   (mapcar 'semantic-tag-start method-tags))))
      ;;
+     ;; TODO: use imenu for emacs lisp
+     (defun psw-imenu-list-parser (tags)
+       "Simplify list of pairs for `imenu--index-alist'."
+       (remove-if
+        'psw-nil?
+        (loop for tag in tags
+              collect (if (and (listp tag)
+                               (not (equal imenu--rescan-item tag)))
+                          (list (car tag)
+                                (let ((pos-info (cdr tag)))
+                                  (cond ((numberp pos-info) pos-info)
+                                        ((markerp pos-info) pos-info)
+                                        ((overlayp pos-info)
+                                         (overlay-start pos-info)))))))))
+     ;;
+     (defun psw-get-tags-list ()
+       (let ((eassist-list (psw-eassist-list-parser (eassist-function-tags))))
+         (if eassist-list eassist-list
+           (psw-imenu-list-parser (imenu--make-index-alist)))))
+     ;;
      (defun psw-switch-function ()
        (interactive)
        (setq eassist-buffer (current-buffer))
        (setq eassist-current-tag (semantic-current-tag))
        (psw-switcher
-        :items-list (psw-eassist-list-parser (eassist-function-tags))
+        :items-list (psw-get-tags-list)
         :item-name-getter 'car
         :switcher (psw-compose 'goto-char 'cadr)))))
 
