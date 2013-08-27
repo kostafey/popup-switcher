@@ -175,7 +175,8 @@ Locate popup menu in the `fill-column' center otherwise.")
      (defun psw-get-tags-list ()
        (let ((eassist-list (psw-eassist-list-parser (eassist-function-tags))))
          (if eassist-list eassist-list
-           (psw-imenu-list-parser (imenu--make-index-alist)))))
+           (psw-imenu-list-parser (or imenu--index-alist
+                                      (imenu--make-index-alist))))))
      ;;
      (defun psw-switch-function ()
        (interactive)
