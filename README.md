@@ -1,11 +1,12 @@
 # popup-switcher
 
-popup-switcher provides (yet another) convenient way to switch buffers.
+popup-switcher provides (yet another) convenient way to switch buffers and
+optional navigation possibility through functions/methods.
 It uses popup lib for better sense.
 
 ## Installation
 
-Add MELPA (of not yet) to your `package-archives` list:
+Add MELPA (if not yet) to your `package-archives` list:
 
 ```lisp
 (require 'package)
