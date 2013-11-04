@@ -65,6 +65,8 @@ List of interactive functions:
 * `psw-switch-recentf` -- switch recent files.
 * `psw-switch-function` -- switch (navigate) through functions in the current
   buffer *(optional)*.
+* `psw-switch-projectile` -- switch among projectile project files list
+  *(optional)*.
 
 Run <kbd>M-x psw-switch-buffer [RET]</kbd> (or your selected key).  Type some letters
 from the name of buffer of interest (since isearch is enabled on start) to
@@ -78,6 +80,7 @@ buffer.
 * [GNU Emacs](http://www.gnu.org/software/emacs/emacs.html) 24.
 * [popup](https://github.com/auto-complete/popup-el).
 * [CEDET](http://cedet.sourceforge.net/) *(optional)*.
+* [projectile](https://github.com/bbatsov/projectile) *(optional)*.
 
 ## License
 

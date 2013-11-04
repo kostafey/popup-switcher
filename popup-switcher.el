@@ -145,6 +145,17 @@ Locate popup menu in the `fill-column' center otherwise.")
    :item-name-getter 'identity
    :switcher 'find-file))
 
+;;;###autoload
+(defun psw-switch-projectile ()
+  (interactive)
+  (psw-switcher
+   :items-list (projectile-current-project-files)
+   :item-name-getter 'identity
+   :switcher (lambda (file)
+               (find-file
+                (expand-file-name file
+                                  (projectile-project-root))))))
+
 (eval-after-load "eassist"
   '(progn
      ;;
