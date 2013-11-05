@@ -65,7 +65,7 @@ List of interactive functions:
 * `psw-switch-recentf` -- switch recent files.
 * `psw-switch-function` -- switch (navigate) through functions in the current
   buffer *(optional)*.
-* `psw-switch-projectile` -- switch among projectile project files list
+* `psw-switch-projectile-files` -- switch among projectile project files list
   *(optional)*.
 
 Run <kbd>M-x psw-switch-buffer [RET]</kbd> (or your selected key).  Type some letters

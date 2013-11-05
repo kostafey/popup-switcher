@@ -146,7 +146,7 @@ Locate popup menu in the `fill-column' center otherwise.")
    :switcher 'find-file))
 
 ;;;###autoload
-(defun psw-switch-projectile ()
+(defun psw-switch-projectile-files ()
   (interactive)
   (psw-switcher
    :items-list (projectile-current-project-files)
