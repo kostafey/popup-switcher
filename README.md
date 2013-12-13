@@ -73,7 +73,8 @@ from the name of buffer of interest (since isearch is enabled on start) to
 filter buffers list, use arrow keys and <kbd>[RET]</kbd> or mouse to select
 buffer.
 
-![popup-switcher-screenshot](https://dl.dropboxusercontent.com/u/820526/popup-switcher.png)
+<img src="https://dl.dropboxusercontent.com/u/820526/psw-switch-buffer.png" width="600" />
+<img src="https://dl.dropboxusercontent.com/u/820526/psw-switch-function.png" width="600" />
 
 ## Requirements:
 
