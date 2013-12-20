@@ -156,6 +156,26 @@ Locate popup menu in the `fill-column' center otherwise.")
                 (expand-file-name file
                                   (projectile-project-root))))))
 
+;;;###autoload
+(defun psw-navigate-files (&optional start-path)
+  (interactive)
+  (let ((start-path (or start-path
+                        (expand-file-name ".." (buffer-file-name)))))
+    (psw-switcher
+     :items-list (remove-if
+                  (lambda (path) (equal (file-name-nondirectory (car path)) "."))
+                  (directory-files-and-attributes start-path t))
+     :item-name-getter (psw-compose 'file-name-nondirectory 'car)
+     :switcher (lambda (entity)
+                 (let* ((entity-path (car entity))
+                        (entity-name (file-name-nondirectory entity-path)))
+                   (if (cadr entity) ; is a directory sign
+                       ;; is a directory
+                       (psw-navigate-files
+                        (expand-file-name entity-name start-path))
+                     ;; is a file
+                     (find-file entity-path)))))))
+
 (eval-after-load "eassist"
   '(progn
      ;;

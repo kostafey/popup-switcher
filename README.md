@@ -63,6 +63,7 @@ List of interactive functions:
 
 * `psw-switch-buffer` -- switch buffers through popup menu.
 * `psw-switch-recentf` -- switch recent files.
+* `psw-navigate-files` -- simple file navigator.
 * `psw-switch-function` -- switch (navigate) through functions in the current
   buffer *(optional)*.
 * `psw-switch-projectile-files` -- switch among projectile project files list
