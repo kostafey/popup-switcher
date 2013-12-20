@@ -188,7 +188,7 @@ Locate popup menu in the `fill-column' center otherwise.")
          (if eassist-list eassist-list
            (psw-imenu-list-parser (or imenu--index-alist
                                       (imenu--make-index-alist))))))
-     ;;
+     ;;;###autoload
      (defun psw-switch-function ()
        (interactive)
        (setq eassist-buffer (current-buffer))
