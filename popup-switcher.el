@@ -34,6 +34,9 @@
   "Non-nil means horizontal locate popup menu in the window center.
 Locate popup menu in the `fill-column' center otherwise.")
 
+(defcustom psw-before-menu-hook nil
+  "Hook runs before menu showed")
+
 (defcustom psw-after-switch-hook nil
   "Hook runs after buffer switch")
 
@@ -117,6 +120,7 @@ Locate popup menu in the `fill-column' center otherwise.")
 `items-list' - the essence items list to select.
 `item-name-getter' - function to convert each item to it's text representation.
 `switcher' - function, that describes what do with the selected item."
+  (run-hooks 'psw-before-menu-hook)
   (let ((item-names-list (mapcar
                           (lambda (x) (funcall
                                        (psw-compose 'psw-get-plain-string
