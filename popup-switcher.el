@@ -5,7 +5,7 @@
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers, functions
-;; Version: 0.2.2
+;; Version: 0.2.3
 ;; Package-Requires: ((popup "0.5.0"))
 
 ;; This file is not part of GNU Emacs.
@@ -47,7 +47,9 @@ Locate popup menu in the `fill-column' center otherwise.")
 
 (defun psw-get-buffer-list ()
   (remove-if (lambda (buf) (or (minibufferp buf)
-                               (equal (substring (buffer-name buf) 0 2) " *")))
+                          (let ((buf-name (buffer-name buf)))
+                            (and (>= (length buf-name) 2)
+                                 (equal (substring buf-name 0 2) " *")))))
              (buffer-list)))
 
 (defun psw-popup-menu (item-names-list &optional window-center)
