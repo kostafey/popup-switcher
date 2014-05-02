@@ -1,8 +1,9 @@
 # popup-switcher
 
-popup-switcher provides (yet another) convenient way to switch buffers and
-optional navigation possibility through functions/methods.
-It uses popup lib for better sense.
+popup-switcher provides (yet another) convenient way to switch buffers, optional
+navigation possibility through functions/methods and any other kind of switching
+you like. It's easy to use and extend for custom purposes.  It uses popup lib
+for better sense.
 
 ## Installation
 
@@ -34,6 +35,16 @@ center.  Locate popup menu in the `fill-column` center otherwise (by default).
 (setq psw-in-window-center t)
 ```
 
+Non-nil `psw-use-flx` enables `flx` fuzzy matching engine for isearch in popup
+menus. [flx-ido](https://github.com/lewang/flx) is required in this case, it can
+be installed by your favorite approach. E.g. by `MEPLA`:
+<kbd>M-x package-install [RET] flx-ido [RET]</kbd>
+
+```lisp
+(setq psw-use-flx t)
+```
+
+
 Add a hotkey to `psw-switch` to you taste, e.g.:
 
 ```lisp
@@ -48,11 +59,11 @@ functions/methods).
 ```lisp
 ;; Activate semantic
 (semantic-mode 1)
- 
+
 ;; Load contrib library
 (add-to-list 'load-path "~/.emacs.d/cedet/contrib/")
 (require 'eassist)
- 
+
 (eval-after-load "eassist"
   '(global-set-key [f3] 'psw-switch-function))
 ```
@@ -83,9 +94,10 @@ buffer.
 * [popup](https://github.com/auto-complete/popup-el).
 * [CEDET](http://cedet.sourceforge.net/) *(optional)*.
 * [projectile](https://github.com/bbatsov/projectile) *(optional)*.
+* [flx-ido](https://github.com/lewang/flx) *(optional)*.
 
 ## License
 
-Copyright © 2013 kostafey <kostafey@gmail.com>
+Copyright © 2013-2014 Kostafey <kostafey@gmail.com>
 
 Distributed under the General Public License 2.0+

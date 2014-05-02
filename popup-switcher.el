@@ -1,11 +1,11 @@
 ;;; popup-switcher.el --- switch to other buffers and files via popup.
 
-;; Copyright (C) 2013  Kostafey <kostafey@gmail.com>
+;; Copyright (C) 2013-2014  Kostafey <kostafey@gmail.com>
 
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers, functions
-;; Version: 0.2.3
+;; Version: 0.2.4
 ;; Package-Requires: ((popup "0.5.0"))
 
 ;; This file is not part of GNU Emacs.
@@ -33,6 +33,9 @@
 (defvar psw-in-window-center nil
   "Non-nil means horizontal locate popup menu in the window center.
 Locate popup menu in the `fill-column' center otherwise.")
+
+(defvar psw-use-flx nil
+  "Non-nil enables `flx' fuzzy matching engine for isearch in popup menus.")
 
 (defcustom psw-before-menu-hook nil
   "Hook runs before menu showed")
@@ -68,26 +71,43 @@ Locate popup menu in the `fill-column' center otherwise.")
          (modified (buffer-modified-p))
          (saved-text (buffer-substring (window-start) (window-end)))
          (old-pos (point))
-         (inhibit-read-only t))
+         (inhibit-read-only t)
+         (psw-temp-face (copy-face 'flx-highlight-face 'psw-temp-face)))
     (unwind-protect
-        (let* ((menu-pos (save-excursion
-                           (artist-move-to-xy x y)
-                           (point)))
-               (target-item-name (popup-menu* item-names-list
-                                              :point menu-pos
-                                              :height menu-height
-                                              :scroll-bar t
-                                              :margin-left 1
-                                              :margin-right 1
-                                              :around nil
-                                              :isearch t)))
-          target-item-name)
-      (when (buffer-modified-p)
-        (delete-region (window-start) (window-end))
-        (insert saved-text)
-        (goto-char old-pos)
-        (set-buffer-modified-p modified)))))
+        (progn
+          (if psw-use-flx
+              (copy-face 'popup-isearch-match 'flx-highlight-face))
+          (let* ((menu-pos (save-excursion
+                             (artist-move-to-xy x y)
+                             (point)))
+                 (target-item-name (popup-menu* item-names-list
+                                                :point menu-pos
+                                                :height menu-height
+                                                :scroll-bar t
+                                                :margin-left 1
+                                                :margin-right 1
+                                                :around nil
+                                                :isearch t)))
+            target-item-name))
+      (progn
+        (when (buffer-modified-p)
+          (delete-region (window-start) (window-end))
+          (insert saved-text)
+          (goto-char old-pos)
+          (set-buffer-modified-p modified))
+        (if psw-use-flx
+            (copy-face 'psw-temp-face 'flx-highlight-face))))))
 
+(defadvice popup-isearch-filter-list (around psw-popup-isearch-filter-list activate)
+  "Choose between the regular popup-isearch-filter-list and flx-ido-match-internal"
+  (if (and psw-use-flx
+           (> (length pattern) 0))
+      (if (not (require 'flx nil t))
+          (progn
+            ad-do-it
+            (message "Please install flx.el and flx-ido.el if you use fuzzy completion"))
+        (setq ad-return-value (flx-ido-match-internal pattern list)))
+    ad-do-it))
 
 (defun psw-nil? (x) (equal nil x))
 
