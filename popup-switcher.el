@@ -55,6 +55,12 @@ Locate popup menu in the `fill-column' center otherwise.")
                                  (equal (substring buf-name 0 2) " *")))))
              (buffer-list)))
 
+(defun psw-copy-face (old-face new-face)
+  (when psw-use-flx
+    (if (facep old-face)
+        (copy-face old-face new-face)
+      (setq new-face nil))))
+
 (defun psw-popup-menu (item-names-list &optional window-center)
   "Popup selection menu.
 `item-names-list' - list of item names to select.
@@ -72,11 +78,10 @@ Locate popup menu in the `fill-column' center otherwise.")
          (saved-text (buffer-substring (window-start) (window-end)))
          (old-pos (point))
          (inhibit-read-only t)
-         (psw-temp-face (copy-face 'flx-highlight-face 'psw-temp-face)))
+         (psw-temp-face (psw-copy-face 'flx-highlight-face 'psw-temp-face)))
     (unwind-protect
         (progn
-          (if psw-use-flx
-              (copy-face 'popup-isearch-match 'flx-highlight-face))
+          (psw-copy-face 'popup-isearch-match 'flx-highlight-face)
           (let* ((menu-pos (save-excursion
                              (artist-move-to-xy x y)
                              (point)))
@@ -95,8 +100,7 @@ Locate popup menu in the `fill-column' center otherwise.")
           (insert saved-text)
           (goto-char old-pos)
           (set-buffer-modified-p modified))
-        (if psw-use-flx
-            (copy-face 'psw-temp-face 'flx-highlight-face))))))
+        (psw-copy-face 'psw-temp-face 'flx-highlight-face)))))
 
 (defadvice popup-isearch-filter-list (around psw-popup-isearch-filter-list activate)
   "Choose between the regular popup-isearch-filter-list and flx-ido-match-internal"
