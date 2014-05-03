@@ -28,12 +28,27 @@ Load popup-switcher:
 
 ## Configuration
 
+### Keybindings
+
+Add a hotkey to `psw-switch-<X>` to you taste (for the full list of predefined
+switching functions see
+[Usage](https://github.com/kostafey/popup-switcher/edit/master/README.md#usage)
+section), e.g.:
+
+```lisp
+(global-set-key [f2] 'psw-switch-buffer)
+```
+
+### Menu position
+
 Non-nil `psw-in-window-center` means horizontal locate popup menu in the window
 center.  Locate popup menu in the `fill-column` center otherwise (by default).
 
 ```lisp
 (setq psw-in-window-center t)
 ```
+
+### Fuzzy matching
 
 Non-nil `psw-use-flx` enables `flx` fuzzy matching engine for isearch in popup
 menus. [flx-ido](https://github.com/lewang/flx) is required in this case, it can
@@ -44,12 +59,7 @@ be installed by your favorite approach. E.g. by `MEPLA`:
 (setq psw-use-flx t)
 ```
 
-
-Add a hotkey to `psw-switch` to you taste, e.g.:
-
-```lisp
-(global-set-key [f2] 'psw-switch-buffer)
-```
+### Functions/methods navigation
 
 To navigate through functions/methods names you should add the most recent
 `CEDET` and load `eassist` lib. This feature is optional, and popup-switcher can
