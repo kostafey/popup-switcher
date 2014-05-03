@@ -32,8 +32,7 @@ Load popup-switcher:
 
 Add a hotkey to `psw-switch-<X>` to you taste (for the full list of predefined
 switching functions see
-[Usage](https://github.com/kostafey/popup-switcher/edit/master/README.md#usage)
-section), e.g.:
+[Usage](https://github.com/kostafey/popup-switcher#usage) section), e.g.:
 
 ```lisp
 (global-set-key [f2] 'psw-switch-buffer)
