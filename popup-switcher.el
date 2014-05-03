@@ -56,6 +56,8 @@ Locate popup menu in the `fill-column' center otherwise.")
              (buffer-list)))
 
 (defun psw-copy-face (old-face new-face)
+  "Safe copy face to handle absence of `flx-highlight-face' if
+`flx-ido' is not installed."
   (when psw-use-flx
     (if (facep old-face)
         (copy-face old-face new-face)
@@ -110,7 +112,10 @@ Locate popup menu in the `fill-column' center otherwise.")
           (progn
             ad-do-it
             (message "Please install flx.el and flx-ido.el if you use fuzzy completion"))
-        (setq ad-return-value (flx-ido-match-internal pattern list)))
+        (if (eq :too-big
+                (catch :too-big
+                  (setq ad-return-value (flx-ido-match-internal pattern list))))
+            ad-do-it))
     ad-do-it))
 
 (defun psw-nil? (x) (equal nil x))
