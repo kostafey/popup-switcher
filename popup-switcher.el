@@ -5,8 +5,8 @@
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers, functions
-;; Version: 0.2.4
-;; Package-Requires: ((popup "0.5.0"))
+;; Version: 0.2.5
+;; Package-Requires: ((cl-lib "0.3")(popup "0.5.0"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -24,8 +24,7 @@
 ;; along with this program; if not, write to the Free Software Foundation,
 ;; Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.  */
 
-(eval-when-compile (require 'cl))
-
+(require 'cl-lib)
 (require 'popup)
 (require 'artist)
 (require 'recentf)
@@ -65,15 +64,17 @@ Locate popup menu in the `fill-column' center otherwise.")
 
 (defun psw-popup-menu (item-names-list &optional window-center)
   "Popup selection menu.
-`item-names-list' - list of item names to select.
+ITEM-NAMES-LIST - list of item names to select.
 `psw-in-window-center' - if t, overrides `psw-in-window-center' var value."
   (if (equal (length item-names-list) 0)
       (error "Popup menu items list is empty."))
   (let* ((menu-height (min 15 (length item-names-list) (- (window-height) 4)))
-         (x (/ (- (if (or psw-in-window-center window-center)
-                      (window-width)
-                    fill-column)
-                  (apply 'max (mapcar 'length item-names-list))) 2))
+         (x (+ (/ (- (if (or psw-in-window-center window-center)
+                         (window-width)
+                       fill-column)
+                     (apply 'max (mapcar 'length item-names-list)))
+                  2)
+               (window-hscroll)))
          (y (+ (- (psw-window-line-number) 2)
                (/ (- (window-height) menu-height) 2)))
          (modified (buffer-modified-p))
@@ -104,7 +105,9 @@ Locate popup menu in the `fill-column' center otherwise.")
           (set-buffer-modified-p modified))
         (psw-copy-face 'psw-temp-face 'flx-highlight-face)))))
 
-(defadvice popup-isearch-filter-list (around psw-popup-isearch-filter-list activate)
+(defadvice popup-isearch-filter-list (around
+                                      psw-popup-isearch-filter-list
+                                      activate)
   "Choose between the regular popup-isearch-filter-list and flx-ido-match-internal"
   (if (and psw-use-flx
            (> (length pattern) 0))
@@ -121,7 +124,7 @@ Locate popup menu in the `fill-column' center otherwise.")
 (defun psw-nil? (x) (equal nil x))
 
 (defun psw-zip (x y)
-  (mapcar* #'list (setcdr (last x) x) y))
+  (cl-mapcar #'list (setcdr (last x) x) y))
 
 (defun psw-flatten (list-of-lists)
   (apply #'append list-of-lists))
@@ -138,24 +141,26 @@ Locate popup menu in the `fill-column' center otherwise.")
   "Remove text properties from the string."
   (format "%s" (intern properties-string)))
 
-(defun* psw-get-item-by-name (&key item-names-list items-list target-item-name)
+(cl-defun psw-get-item-by-name (&key item-names-list
+                                     items-list
+                                     target-item-name)
   "Return the item by it's name."
   (let ((items-map (psw-flatten (psw-zip item-names-list items-list))))
     (lax-plist-get items-map target-item-name)))
 
-(defun* psw-switcher (&key
-                      items-list
-                      item-name-getter
-                      switcher)
+(cl-defun psw-switcher (&key
+                        items-list
+                        item-name-getter
+                        switcher)
   "Simplify create new popup switchers.
-`items-list' - the essence items list to select.
-`item-name-getter' - function to convert each item to it's text representation.
-`switcher' - function, that describes what do with the selected item."
+ITEMS-LIST - the essence items list to select.
+ITEM-NAME-GETTER - function to convert each item to it's text representation.
+SWITCHER - function, that describes what do with the selected item."
   (run-hooks 'psw-before-menu-hook)
   (let ((item-names-list (mapcar
                           (lambda (x) (funcall
-                                       (psw-compose 'psw-get-plain-string
-                                                item-name-getter) x))
+                                  (psw-compose 'psw-get-plain-string
+                                               item-name-getter) x))
                           items-list)))
     (funcall switcher
              (psw-get-item-by-name
@@ -218,10 +223,10 @@ Locate popup menu in the `fill-column' center otherwise.")
        "Return list of pairs: first - function name, second - it's position."
        (let ((method-triplets (mapcar
                                'eassist-function-string-triplet method-tags)))
-         (mapcar* '(lambda (name position)
-                     (list name position))
-                  (mapcar 'caddr method-triplets)
-                  (mapcar 'semantic-tag-start method-tags))))
+         (cl-mapcar '(lambda (name position)
+                       (list name position))
+                    (mapcar 'caddr method-triplets)
+                    (mapcar 'semantic-tag-start method-tags))))
      ;;
      ;; TODO: use imenu for emacs lisp
      (defun psw-imenu-list-parser (tags)
