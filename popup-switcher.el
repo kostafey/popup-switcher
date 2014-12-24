@@ -5,7 +5,7 @@
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers, functions
-;; Version: 0.2.5
+;; Version: 0.2.6
 ;; Package-Requires: ((cl-lib "0.3")(popup "0.5.0"))
 
 ;; This file is not part of GNU Emacs.
@@ -35,6 +35,9 @@ Locate popup menu in the `fill-column' center otherwise.")
 
 (defvar psw-use-flx nil
   "Non-nil enables `flx' fuzzy matching engine for isearch in popup menus.")
+
+(defvar psw-popup-menu-max-length 15
+  "Set maximum number of visible items in popup menus.")
 
 (defcustom psw-before-menu-hook nil
   "Hook runs before menu showed")
@@ -68,7 +71,9 @@ ITEM-NAMES-LIST - list of item names to select.
 `psw-in-window-center' - if t, overrides `psw-in-window-center' var value."
   (if (equal (length item-names-list) 0)
       (error "Popup menu items list is empty."))
-  (let* ((menu-height (min 15 (length item-names-list) (- (window-height) 4)))
+  (let* ((menu-height (min psw-popup-menu-max-length
+                           (length item-names-list)
+                           (- (window-height) 4)))
          (x (+ (/ (- (if (or psw-in-window-center window-center)
                          (window-width)
                        fill-column)

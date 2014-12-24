@@ -38,6 +38,14 @@ switching functions see
 (global-set-key [f2] 'psw-switch-buffer)
 ```
 
+### Maximum number of visible items
+
+Set maximum number of visible items in popup menus
+
+```lisp
+(setq psw-popup-menu-max-length 15)
+```
+
 ### Menu position
 
 Non-nil `psw-in-window-center` means horizontal locate popup menu in the window
