@@ -92,13 +92,13 @@ functions/methods).
 
 List of interactive functions:
 
-* `psw-switch-buffer` -- switch buffers through popup menu.
-* `psw-switch-recentf` -- switch recent files.
-* `psw-navigate-files` -- simple file navigator.
-* `psw-switch-function` -- switch (navigate) through functions in the current
-  buffer *(optional)*.
-* `psw-switch-projectile-files` -- switch among projectile project files list
-  *(optional)*.
+ Command                       | Description
+-------------------------------|------------------------------------------
+ `psw-switch-buffer`           | switch buffers through popup menu
+ `psw-switch-recentf`          | switch recent files
+ `psw-navigate-files`          | simple file navigator
+ `psw-switch-function`         | switch (navigate) through functions in the current buffer *(optional)*
+ `psw-switch-projectile-files` | switch among projectile project files list *(optional)*
 
 Run <kbd>M-x psw-switch-buffer [RET]</kbd> (or your selected key).  Type some letters
 from the name of buffer of interest (since isearch is enabled on start) to
