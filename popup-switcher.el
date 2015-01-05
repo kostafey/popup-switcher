@@ -1,11 +1,11 @@
-;;; popup-switcher.el --- switch to other buffers and files via popup.
+;;; popup-switcher.el --- switch to other buffers and files via popup. -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2013-2015  Kostafey <kostafey@gmail.com>
 
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers, functions
-;; Version: 0.2.7
+;; Version: 0.2.8
 ;; Package-Requires: ((cl-lib "0.3")(popup "0.5.0"))
 
 ;; This file is not part of GNU Emacs.
@@ -136,11 +136,11 @@ ITEM-NAMES-LIST - list of item names to select.
 
 (defun psw-compose (&rest funs)
   "Return function composed of FUNS."
-  (lexical-let ((lex-funs funs))
+  (let ((lex-funs funs))
     (lambda (&rest args)
-      (reduce 'funcall (butlast lex-funs)
-              :from-end t
-              :initial-value (apply (car (last lex-funs)) args)))))
+      (cl-reduce 'funcall (butlast lex-funs)
+                 :from-end t
+                 :initial-value (apply (car (last lex-funs)) args)))))
 
 (defun psw-get-plain-string (properties-string)
   "Remove text properties from the string."
