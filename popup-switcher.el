@@ -1,11 +1,11 @@
 ;;; popup-switcher.el --- switch to other buffers and files via popup.
 
-;; Copyright (C) 2013-2014  Kostafey <kostafey@gmail.com>
+;; Copyright (C) 2013-2015  Kostafey <kostafey@gmail.com>
 
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers, functions
-;; Version: 0.2.6
+;; Version: 0.2.7
 ;; Package-Requires: ((cl-lib "0.3")(popup "0.5.0"))
 
 ;; This file is not part of GNU Emacs.
@@ -51,11 +51,11 @@ Locate popup menu in the `fill-column' center otherwise.")
     (line-number-at-pos)))
 
 (defun psw-get-buffer-list ()
-  (remove-if (lambda (buf) (or (minibufferp buf)
-                          (let ((buf-name (buffer-name buf)))
-                            (and (>= (length buf-name) 2)
-                                 (equal (substring buf-name 0 2) " *")))))
-             (buffer-list)))
+  (cl-remove-if (lambda (buf) (or (minibufferp buf)
+                             (let ((buf-name (buffer-name buf)))
+                               (and (>= (length buf-name) 2)
+                                    (equal (substring buf-name 0 2) " *")))))
+                (buffer-list)))
 
 (defun psw-copy-face (old-face new-face)
   "Safe copy face to handle absence of `flx-highlight-face' if
@@ -207,7 +207,7 @@ SWITCHER - function, that describes what do with the selected item."
   (let ((start-path (or start-path
                         (expand-file-name ".." (buffer-file-name)))))
     (psw-switcher
-     :items-list (remove-if
+     :items-list (cl-remove-if
                   (lambda (path) (equal (file-name-nondirectory (car path)) "."))
                   (directory-files-and-attributes start-path t))
      :item-name-getter (psw-compose 'file-name-nondirectory 'car)
@@ -236,7 +236,7 @@ SWITCHER - function, that describes what do with the selected item."
      ;; TODO: use imenu for emacs lisp
      (defun psw-imenu-list-parser (tags)
        "Simplify list of pairs for `imenu--index-alist'."
-       (remove-if
+       (cl-remove-if
         'psw-nil?
         (loop for tag in tags
               collect (if (and (listp tag)

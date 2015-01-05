@@ -115,6 +115,6 @@ buffer.
 
 ## License
 
-Copyright © 2013-2014 Kostafey <kostafey@gmail.com>
+Copyright © 2013-2015 Kostafey <kostafey@gmail.com>
 
 Distributed under the General Public License 2.0+
