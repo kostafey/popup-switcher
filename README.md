@@ -1,3 +1,6 @@
+[![License GPL 2](https://img.shields.io/badge/license-GPL_2-green.svg)](http://www.gnu.org/licenses/gpl-2.0.txt)
+[![MELPA](http://melpa.org/packages/popup-switcher-badge.svg)](http://melpa.org/#/popup-switcher)
+
 # popup-switcher
 
 popup-switcher provides (yet another) convenient way to switch buffers, optional
