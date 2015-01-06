@@ -5,8 +5,8 @@
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers, functions
-;; Version: 0.2.8
-;; Package-Requires: ((cl-lib "0.3")(popup "0.5.0"))
+;; Version: 0.2.9
+;; Package-Requires: ((cl-lib "0.3")(popup "0.5.2"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -38,6 +38,9 @@ Locate popup menu in the `fill-column' center otherwise.")
 
 (defvar psw-popup-menu-max-length 15
   "Set maximum number of visible items in popup menus.")
+
+(defcustom psw-mark-modified-buffers nil
+  "Non-nil means mark modified buffers with star char (*)")
 
 (defcustom psw-before-menu-hook nil
   "Hook runs before menu showed")
@@ -174,12 +177,28 @@ SWITCHER - function, that describes what do with the selected item."
               :target-item-name (psw-popup-menu item-names-list))))
   (run-hooks 'psw-after-switch-hook))
 
+(cl-defun psw-is-temp-buffer (&optional buffer)
+  "Find buffers with names bounded with stars like *Messages* or *scratch*."
+  (with-current-buffer (or buffer (current-buffer))
+    (let ((buffer-name-length (length (buffer-name))))
+      (and
+       (equal "*" (substring (buffer-name) 0 1))
+       (equal "*" (substring (buffer-name)
+                             (1- buffer-name-length)
+                             buffer-name-length))))))
+
 ;;;###autoload
 (defun psw-switch-buffer ()
   (interactive)
   (psw-switcher
    :items-list (psw-get-buffer-list)
-   :item-name-getter 'buffer-name
+   :item-name-getter (lambda (buffer)
+                       (with-current-buffer buffer
+                         (if (and psw-mark-modified-buffers
+                                  (buffer-modified-p)
+                                  (not (psw-is-temp-buffer)))
+                             (concat (buffer-name) " *")
+                           (buffer-name))))
    :switcher 'switch-to-buffer))
 
 ;;;###autoload
