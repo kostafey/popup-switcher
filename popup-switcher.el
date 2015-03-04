@@ -29,24 +29,29 @@
 (require 'artist)
 (require 'recentf)
 
-(defvar psw-in-window-center nil
+(defcustom psw-in-window-center nil
   "Non-nil means horizontal locate popup menu in the window center.
-Locate popup menu in the `fill-column' center otherwise.")
+Locate popup menu in the `fill-column' center otherwise."
+  :type 'boolean)
 
-(defvar psw-use-flx nil
-  "Non-nil enables `flx' fuzzy matching engine for isearch in popup menus.")
+(defcustom psw-use-flx nil
+  "Non-nil enables `flx' fuzzy matching engine for isearch in popup menus."
+  :type 'boolean)
 
-(defvar psw-popup-menu-max-length 15
-  "Set maximum number of visible items in popup menus.")
+(defcustom psw-popup-menu-max-length 15
+  "Set maximum number of visible items in popup menus."
+  :type 'integer)
 
 (defcustom psw-mark-modified-buffers nil
   "Non-nil means mark modified buffers with star char (*)")
 
 (defcustom psw-before-menu-hook nil
-  "Hook runs before menu showed")
+  "Hook runs before menu showed"
+  :type 'hook)
 
 (defcustom psw-after-switch-hook nil
-  "Hook runs after buffer switch")
+  "Hook runs after buffer switch"
+  :type 'hook)
 
 (defun psw-window-line-number ()
   (save-excursion
