@@ -232,7 +232,9 @@ SWITCHER - function, that describes what do with the selected item."
                                            t)))
                      (when (kill-buffer buff)
                        (setf (popup-list menu)
-                             (remove buff (popup-list menu)))
+                             (remove buff (popup-list menu))
+                             (popup-original-list menu)
+                             (remove buff (popup-original-list menu)))
                        (if (not same-buffer-p)
                            (progn
                              (popup-previous menu)
