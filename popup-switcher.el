@@ -73,7 +73,8 @@ Locate popup menu in the `fill-column' center otherwise."
         (copy-face old-face new-face)
       (setq new-face nil))))
 
-(defvar psw-buffer-modified t)
+(defvar psw-buffer-modified t
+  "Current buffer original modified state.")
 
 (cl-defun psw-popup-menu (&key
                           item-names-list
@@ -81,7 +82,8 @@ Locate popup menu in the `fill-column' center otherwise."
                           (window-center nil))
   "Popup selection menu.
 ITEM-NAMES-LIST - list of item names to select.
-`psw-in-window-center' - if t, overrides `psw-in-window-center' var value."
+FALLBACK - popup loop unexpected key handler.
+WINDOW-CENTER - if t, overrides `psw-in-window-center' var value."
   (if (equal (length item-names-list) 0)
       (error "Popup menu items list is empty."))
   (let* ((menu-height (min psw-popup-menu-max-length
@@ -107,16 +109,15 @@ ITEM-NAMES-LIST - list of item names to select.
           (let* ((menu-pos (save-excursion
                              (artist-move-to-xy x y)
                              (point)))
-                 (target-item-name (popup-menu*
-                                    item-names-list
-                                    :point menu-pos
-                                    :height menu-height
-                                    :scroll-bar t
-                                    :margin-left 1
-                                    :margin-right 1
-                                    :around nil
-                                    :isearch t
-                                    :fallback fallback)))
+                 (target-item-name (popup-menu* item-names-list
+                                                :point menu-pos
+                                                :height menu-height
+                                                :scroll-bar t
+                                                :margin-left 1
+                                                :margin-right 1
+                                                :around nil
+                                                :isearch t
+                                                :fallback fallback)))
             target-item-name))
       (progn
         (when (buffer-modified-p)
