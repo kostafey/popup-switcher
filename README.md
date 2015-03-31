@@ -8,6 +8,18 @@ navigation possibility through functions/methods and any other kind of switching
 you like. It's easy to use and extend for custom purposes.  It uses popup lib
 for better sense.
 
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [Keybindings](#keybindings)
+  - [Maximum number of visible items](#maximum-number-of-visible-items)
+  - [Menu position](#menu-position)
+  - [Fuzzy matching](#fuzzy-matching)
+  - [Modified buffers marker](#modified-buffers-marker)
+  - [Functions/methods navigation](#functionsmethods-navigation)
+- [Usage](#usage)
+- [Requirements](#requirements)
+- [License](#license)
+
 ## Installation
 
 Add MELPA (if not yet) to your `package-archives` list:
@@ -69,6 +81,12 @@ be installed by your favorite approach. E.g. by `MEPLA`:
 (setq psw-use-flx t)
 ```
 
+### Modified buffers marker
+
+Non-nil `psw-mark-modified-buffers` means mark modified buffers with star char
+(`*`) expect special beffers like `*Messages*` any time you call
+`psw-switch-buffer`.
+
 ### Functions/methods navigation
 
 To navigate through functions/methods names you should add the most recent
@@ -104,6 +122,9 @@ Run <kbd>M-x psw-switch-buffer [RET]</kbd> (or your selected key).  Type some le
 from the name of buffer of interest (since isearch is enabled on start) to
 filter buffers list, use arrow keys and <kbd>[RET]</kbd> or mouse to select
 buffer.
+
+When you are in menu created by `psw-switch-buffer`, you can kill selected
+buffer by pressing <kbd>C-d</kbd> or <kbd>C-k</kbd>.
 
 <img src="https://dl.dropboxusercontent.com/u/820526/psw-switch-buffer.png" width="600" />
 <img src="https://dl.dropboxusercontent.com/u/820526/psw-switch-function.png" width="600" />

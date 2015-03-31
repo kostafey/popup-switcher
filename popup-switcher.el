@@ -5,7 +5,7 @@
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers, functions
-;; Version: 0.2.9
+;; Version: 0.2.10
 ;; Package-Requires: ((cl-lib "0.3")(popup "0.5.2"))
 
 ;; This file is not part of GNU Emacs.
@@ -73,7 +73,12 @@ Locate popup menu in the `fill-column' center otherwise."
         (copy-face old-face new-face)
       (setq new-face nil))))
 
-(defun psw-popup-menu (item-names-list &optional window-center)
+(defvar psw-buffer-modified t)
+
+(cl-defun psw-popup-menu (&key
+                          item-names-list
+                          fallback
+                          (window-center nil))
   "Popup selection menu.
 ITEM-NAMES-LIST - list of item names to select.
 `psw-in-window-center' - if t, overrides `psw-in-window-center' var value."
@@ -95,20 +100,23 @@ ITEM-NAMES-LIST - list of item names to select.
          (old-pos (point))
          (inhibit-read-only t)
          (psw-temp-face (psw-copy-face 'flx-highlight-face 'psw-temp-face)))
+    (setq psw-buffer-modified modified)
     (unwind-protect
         (progn
           (psw-copy-face 'popup-isearch-match 'flx-highlight-face)
           (let* ((menu-pos (save-excursion
                              (artist-move-to-xy x y)
                              (point)))
-                 (target-item-name (popup-menu* item-names-list
-                                                :point menu-pos
-                                                :height menu-height
-                                                :scroll-bar t
-                                                :margin-left 1
-                                                :margin-right 1
-                                                :around nil
-                                                :isearch t)))
+                 (target-item-name (popup-menu*
+                                    item-names-list
+                                    :point menu-pos
+                                    :height menu-height
+                                    :scroll-bar t
+                                    :margin-left 1
+                                    :margin-right 1
+                                    :around nil
+                                    :isearch t
+                                    :fallback fallback)))
             target-item-name))
       (progn
         (when (buffer-modified-p)
@@ -164,7 +172,8 @@ ITEM-NAMES-LIST - list of item names to select.
 (cl-defun psw-switcher (&key
                         items-list
                         item-name-getter
-                        switcher)
+                        switcher
+                        (fallback 'popup-menu-fallback))
   "Simplify create new popup switchers.
 ITEMS-LIST - the essence items list to select.
 ITEM-NAME-GETTER - function to convert each item to it's text representation.
@@ -179,7 +188,9 @@ SWITCHER - function, that describes what do with the selected item."
              (psw-get-item-by-name
               :item-names-list item-names-list
               :items-list items-list
-              :target-item-name (psw-popup-menu item-names-list))))
+              :target-item-name (psw-popup-menu
+                                 :item-names-list item-names-list
+                                 :fallback fallback))))
   (run-hooks 'psw-after-switch-hook))
 
 (cl-defun psw-is-temp-buffer (&optional buffer)
@@ -204,7 +215,28 @@ SWITCHER - function, that describes what do with the selected item."
                                   (not (psw-is-temp-buffer)))
                              (concat (buffer-name) " *")
                            (buffer-name))))
-   :switcher 'switch-to-buffer))
+   :switcher 'switch-to-buffer
+   :fallback (lambda (key _)
+               (if (or (equal (kbd "C-k") key)
+                       (equal (kbd "C-d") key))
+                   (let* ((menu (car popup-instances))
+                          (buff (nth (popup-cursor menu)
+                                     (popup-list menu)))
+                          (same-buffer-p (when (and (equal
+                                                     (buffer-name
+                                                      (current-buffer))
+                                                     buff))
+                                           (set-buffer-modified-p
+                                            psw-buffer-modified)
+                                           t)))
+                     (when (kill-buffer buff)
+                       (setf (popup-list menu)
+                             (remove buff (popup-list menu)))
+                       (if (not same-buffer-p)
+                           (progn
+                             (popup-previous menu)
+                             (popup-draw menu))
+                         (popup-delete menu))))))))
 
 ;;;###autoload
 (defun psw-switch-recentf ()
