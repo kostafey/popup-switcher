@@ -29,6 +29,10 @@
 (require 'artist)
 (require 'recentf)
 
+(defgroup popup-switcher nil
+  "Switch to other buffers and files via popup."
+  :group 'popup)
+
 (defcustom psw-in-window-center nil
   "Non-nil means horizontal locate popup menu in the window center.
 Locate popup menu in the `fill-column' center otherwise."
