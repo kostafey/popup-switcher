@@ -301,15 +301,15 @@ SWITCHER - function, that describes what do with the selected item."
        "Simplify list of pairs for `imenu--index-alist'."
        (cl-remove-if
         'psw-nil?
-        (loop for tag in tags
-              collect (if (and (listp tag)
-                               (not (equal imenu--rescan-item tag)))
-                          (list (car tag)
-                                (let ((pos-info (cdr tag)))
-                                  (cond ((numberp pos-info) pos-info)
-                                        ((markerp pos-info) pos-info)
-                                        ((overlayp pos-info)
-                                         (overlay-start pos-info)))))))))
+        (cl-loop for tag in tags
+                 collect (if (and (listp tag)
+                                  (not (equal imenu--rescan-item tag)))
+                             (list (car tag)
+                                   (let ((pos-info (cdr tag)))
+                                     (cond ((numberp pos-info) pos-info)
+                                           ((markerp pos-info) pos-info)
+                                           ((overlayp pos-info)
+                                            (overlay-start pos-info)))))))))
      ;;
      (defun psw-get-tags-list ()
        (let ((eassist-list (psw-eassist-list-parser (eassist-function-tags))))
