@@ -31,31 +31,44 @@
 
 (defgroup popup-switcher nil
   "Switch to other buffers and files via popup."
-  :group 'popup)
-
-(defcustom psw-in-window-center nil
-  "Non-nil means horizontal locate popup menu in the window center.
-Locate popup menu in the `fill-column' center otherwise."
-  :type 'boolean)
+  :group 'popup
+  :prefix "psw"
+  :link '(url-link "https://github.com/kostafey/popup-switcher"))
 
 (defcustom psw-use-flx nil
   "Non-nil enables `flx' fuzzy matching engine for isearch in popup menus."
+  :group 'popup-switcher
   :type 'boolean)
+
+(defcustom psw-popup-position 'fill-column
+  "Defines popup position.  Possible values are one of:
+point - open popup at point.
+center - open popup at window center
+fill-column - centered relative to `fill-column'"
+  :group 'popup-switcher
+  :type '(choice
+	  (const :tag "point" :value point)
+	  (const :tag "center" :value center)
+	  (const :tag "fill-column" :value fill-column)))
 
 (defcustom psw-popup-menu-max-length 15
   "Set maximum number of visible items in popup menus."
+  :group 'popup-switcher
   :type 'integer)
 
 (defcustom psw-mark-modified-buffers nil
-  "Non-nil means mark modified buffers with star char (*)")
+  "Non-nil means mark modified buffers with star char (*)"
+  :group 'popup-switcher)
 
 (defcustom psw-before-menu-hook nil
   "Hook runs before menu showed"
-  :type 'hook)
+  :type 'hook
+  :group 'popup-switcher)
 
 (defcustom psw-after-switch-hook nil
   "Hook runs after buffer switch"
-  :type 'hook)
+  :type 'hook
+  :group 'popup-switcher)
 
 (defun psw-window-line-number ()
   (save-excursion
@@ -80,27 +93,39 @@ Locate popup menu in the `fill-column' center otherwise."
 (defvar psw-buffer-modified t
   "Current buffer original modified state.")
 
+(defun psw-popup-menu-point (menu-height popup-items &optional position)
+  "Calculate the point for a popup menu.
+MENU-HEIGHT - required menu height,
+POPUP-ITEMS - items to be shown in the popup,
+POSITION - if set, overrides `psw-popup-position' value."
+  (let* ((popup-position (or position psw-popup-position 'point)))
+    (if (eq popup-position 'point)
+	(point)
+      (let* ((x (+ (/ (- (if (eq popup-position 'center)
+			     (window-width)
+			   fill-column)
+			 (apply 'max (mapcar 'length popup-items)))
+		      2)
+		   (window-hscroll)))
+	     (y (+ (- (psw-window-line-number) 2)
+		   (/ (- (window-height) menu-height) 2))))
+	(save-excursion
+	  (artist-move-to-xy x y)
+	  (point))))))
+
 (cl-defun psw-popup-menu (&key
                           item-names-list
                           fallback
-                          (window-center nil))
+                          (position nil))
   "Popup selection menu.
 ITEM-NAMES-LIST - list of item names to select.
 FALLBACK - popup loop unexpected key handler.
-WINDOW-CENTER - if t, overrides `psw-in-window-center' var value."
+POSITION - if set, overrides `psw-popup-position' var value."
   (if (equal (length item-names-list) 0)
       (error "Popup menu items list is empty."))
   (let* ((menu-height (min psw-popup-menu-max-length
                            (length item-names-list)
                            (- (window-height) 4)))
-         (x (+ (/ (- (if (or psw-in-window-center window-center)
-                         (window-width)
-                       fill-column)
-                     (apply 'max (mapcar 'length item-names-list)))
-                  2)
-               (window-hscroll)))
-         (y (+ (- (psw-window-line-number) 2)
-               (/ (- (window-height) menu-height) 2)))
          (modified (buffer-modified-p))
          (saved-text (buffer-substring (window-start) (window-end)))
          (old-pos (point))
@@ -110,9 +135,7 @@ WINDOW-CENTER - if t, overrides `psw-in-window-center' var value."
     (unwind-protect
         (progn
           (psw-copy-face 'popup-isearch-match 'flx-highlight-face)
-          (let* ((menu-pos (save-excursion
-                             (artist-move-to-xy x y)
-                             (point)))
+          (let* ((menu-pos (psw-popup-menu-point menu-height item-names-list position))
                  (target-item-name (popup-menu* item-names-list
                                                 :point menu-pos
                                                 :height menu-height
@@ -178,7 +201,8 @@ WINDOW-CENTER - if t, overrides `psw-in-window-center' var value."
                         items-list
                         item-name-getter
                         switcher
-                        (fallback 'popup-menu-fallback))
+                        (fallback 'popup-menu-fallback)
+                        (position nil))
   "Simplify create new popup switchers.
 ITEMS-LIST - the essence items list to select.
 ITEM-NAME-GETTER - function to convert each item to it's text representation.
@@ -195,7 +219,8 @@ SWITCHER - function, that describes what do with the selected item."
               :items-list items-list
               :target-item-name (psw-popup-menu
                                  :item-names-list item-names-list
-                                 :fallback fallback))))
+                                 :fallback fallback
+                                 :position position))))
   (run-hooks 'psw-after-switch-hook))
 
 (cl-defun psw-is-temp-buffer (&optional buffer)
