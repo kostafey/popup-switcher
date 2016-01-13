@@ -5,7 +5,7 @@
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers, functions
-;; Version: 0.2.11
+;; Version: 0.2.12
 ;; Package-Requires: ((cl-lib "0.3")(popup "0.5.3"))
 
 ;; This file is not part of GNU Emacs.
@@ -98,20 +98,20 @@ fill-column - centered relative to `fill-column'"
 MENU-HEIGHT - required menu height,
 POPUP-ITEMS - items to be shown in the popup,
 POSITION - if set, overrides `psw-popup-position' value."
-  (let* ((popup-position (or position psw-popup-position 'point)))
+  (let* ((popup-position (or position psw-popup-position 'fill-column)))
     (if (eq popup-position 'point)
-	(point)
+        (point)
       (let* ((x (+ (/ (- (if (eq popup-position 'center)
-			     (window-width)
-			   fill-column)
-			 (apply 'max (mapcar 'length popup-items)))
-		      2)
-		   (window-hscroll)))
-	     (y (+ (- (psw-window-line-number) 2)
-		   (/ (- (window-height) menu-height) 2))))
-	(save-excursion
-	  (artist-move-to-xy x y)
-	  (point))))))
+                             (window-width)
+                           fill-column)
+                         (apply 'max (mapcar 'length popup-items)))
+                      2)
+                   (window-hscroll)))
+             (y (+ (- (psw-window-line-number) 2)
+                   (/ (- (window-height) menu-height) 2))))
+        (save-excursion
+          (artist-move-to-xy x y)
+          (point))))))
 
 (cl-defun psw-popup-menu (&key
                           item-names-list

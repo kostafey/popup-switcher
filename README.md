@@ -62,12 +62,17 @@ Set maximum number of visible items in popup menus
 ```
 
 ### Menu position
+Menu opens centered with respect to `fill-column` by default.
+Set `psw-popup-position` variable to change horizontal positioning.
 
-Non-nil `psw-in-window-center` means horizontal locate popup menu in the window
-center.  Locate popup menu in the `fill-column` center otherwise (by default).
+Possible values are:
+
+* `fill-column` - center relative to fill-column (default setting)
+* `center` - center relative to window borders
+* `point` - open popup at point
 
 ```lisp
-(setq psw-in-window-center t)
+(setq psw-popup-position 'center)
 ```
 
 ### Fuzzy matching
