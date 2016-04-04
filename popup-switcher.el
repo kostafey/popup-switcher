@@ -1,11 +1,11 @@
 ;;; popup-switcher.el --- switch to other buffers and files via popup. -*- lexical-binding: t -*-
 
-;; Copyright (C) 2013-2015  Kostafey <kostafey@gmail.com>
+;; Copyright (C) 2013-2016  Kostafey <kostafey@gmail.com>
 
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
 ;; Keywords: popup, switch, buffers, functions
-;; Version: 0.2.12
+;; Version: 0.2.13
 ;; Package-Requires: ((cl-lib "0.3")(popup "0.5.3"))
 
 ;; This file is not part of GNU Emacs.
@@ -309,47 +309,33 @@ SWITCHER - function, that describes what do with the selected item."
                      ;; is a file
                      (find-file entity-path)))))))
 
-(eval-after-load "eassist"
-  '(progn
-     ;;
-     (defun psw-eassist-list-parser (method-tags)
-       "Return list of pairs: first - function name, second - it's position."
-       (let ((method-triplets (mapcar
-                               'eassist-function-string-triplet method-tags)))
-         (cl-mapcar '(lambda (name position)
-                       (list name position))
-                    (mapcar 'caddr method-triplets)
-                    (mapcar 'semantic-tag-start method-tags))))
-     ;;
-     ;; TODO: use imenu for emacs lisp
-     (defun psw-imenu-list-parser (tags)
-       "Simplify list of pairs for `imenu--index-alist'."
-       (cl-remove-if
-        'psw-nil?
-        (cl-loop for tag in tags
-                 collect (if (and (listp tag)
-                                  (not (equal imenu--rescan-item tag)))
-                             (list (car tag)
-                                   (let ((pos-info (cdr tag)))
-                                     (cond ((numberp pos-info) pos-info)
-                                           ((markerp pos-info) pos-info)
-                                           ((overlayp pos-info)
-                                            (overlay-start pos-info)))))))))
-     ;;
-     (defun psw-get-tags-list ()
-       (let ((eassist-list (psw-eassist-list-parser (eassist-function-tags))))
-         (if eassist-list eassist-list
-           (psw-imenu-list-parser (or imenu--index-alist
-                                      (imenu--make-index-alist))))))
-     ;;;###autoload
-     (defun psw-switch-function ()
-       (interactive)
-       (setq eassist-buffer (current-buffer))
-       (setq eassist-current-tag (semantic-current-tag))
-       (psw-switcher
-        :items-list (psw-get-tags-list)
-        :item-name-getter 'car
-        :switcher (psw-compose 'goto-char 'cadr)))))
+(defun psw-flatten-index (imenu-index)
+  "Flatten imenu index into a plain list.
+IMENU-INDEX - imenu index tree."
+  (-mapcat
+   (lambda (x)
+     (if (imenu--subalist-p x)
+         (mapcar (lambda (y) (cons (concat (car x) ":" (car y)) (cdr y)))
+                 (psw-flatten-index (cdr x)))
+       (list x)))
+   imenu-index))
+
+(defun psw-get-imenu-items ()
+  (let ((items-list (psw-flatten-index (or imenu--index-alist
+                                           (imenu--make-index-alist)))))
+    (mapcar
+     (lambda (x) (cons (car x) (if (overlayp (cdr x))
+                              (overlay-start (cdr x))
+                            (cdr x))))
+     items-list)))
+
+;;;###autoload
+(defun psw-switch-function ()
+  (interactive)
+  (psw-switcher
+   :items-list (psw-get-imenu-items)
+   :item-name-getter 'car
+   :switcher (psw-compose 'goto-char 'cdr)))
 
 (provide 'popup-switcher)
 

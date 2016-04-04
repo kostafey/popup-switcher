@@ -3,7 +3,7 @@
 
 # popup-switcher
 
-popup-switcher provides (yet another) convenient way to switch buffers, optional
+popup-switcher provides (yet another) convenient way to switch buffers,
 navigation possibility through functions/methods and any other kind of switching
 you like. It's easy to use and extend for custom purposes.  It uses popup lib
 for better sense.
@@ -53,6 +53,15 @@ switching functions see
 (global-set-key [f2] 'psw-switch-buffer)
 ```
 
+### Functions/methods navigation
+
+Uses imenu to navigate through functions/methods names via
+`psw-switch-function`.
+
+```lisp
+(global-set-key [f3] 'psw-switch-function)
+```
+
 ### Maximum number of visible items
 
 Set maximum number of visible items in popup menus
@@ -92,25 +101,6 @@ Non-nil `psw-mark-modified-buffers` means mark modified buffers with star char
 (`*`) expect special beffers like `*Messages*` any time you call
 `psw-switch-buffer`.
 
-### Functions/methods navigation
-
-To navigate through functions/methods names you should add the most recent
-`CEDET` and load `eassist` lib. This feature is optional, and popup-switcher can
-operate without `CEDET` (and therefore without navigation possibility through
-functions/methods).
-
-```lisp
-;; Activate semantic
-(semantic-mode 1)
-
-;; Load contrib library
-(add-to-list 'load-path "~/.emacs.d/cedet/contrib/")
-(require 'eassist)
-
-(eval-after-load "eassist"
-  '(global-set-key [f3] 'psw-switch-function))
-```
-
 ## Usage
 
 List of interactive functions:
@@ -138,13 +128,12 @@ buffer by pressing <kbd>C-d</kbd> or <kbd>C-k</kbd>.
 
 * [GNU Emacs](http://www.gnu.org/software/emacs/emacs.html) 24.
 * [popup](https://github.com/auto-complete/popup-el).
-* [CEDET](http://cedet.sourceforge.net/) *(optional)*.
 * [projectile](https://github.com/bbatsov/projectile) *(optional)*.
 * [flx-ido](https://github.com/lewang/flx) *(optional)*.
 
 ## License
 
-Copyright © 2013-2015 Kostafey <kostafey@gmail.com> and
+Copyright © 2013-2016 Kostafey <kostafey@gmail.com> and
 [contributors](https://github.com/kostafey/popup-switcher/contributors)
 
 Distributed under the General Public License 2.0+
