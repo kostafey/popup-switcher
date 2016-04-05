@@ -321,8 +321,10 @@ IMENU-INDEX - imenu index tree."
    imenu-index))
 
 (defun psw-get-imenu-items ()
-  (let ((items-list (psw-flatten-index (or imenu--index-alist
-                                           (imenu--make-index-alist)))))
+  (let ((items-list
+         (delq imenu--rescan-item
+               (psw-flatten-index (or imenu--index-alist
+                                      (imenu--make-index-alist))))))
     (mapcar
      (lambda (x) (cons (car x) (if (overlayp (cdr x))
                               (overlay-start (cdr x))
