@@ -70,6 +70,16 @@ fill-column - centered relative to `fill-column'"
   :type 'hook
   :group 'popup-switcher)
 
+(defcustom psw-uneditable-modes '(circe-channel-mode
+                                  circe-query-mode
+                                  circe-server-mode
+                                  slime-repl-mode)
+  "List of major modes unsuitable to keep buffer text manually.
+Consequences of menu drawing and probable text changing should not be removed
+by buffer editing for this comint-like modes."
+  :type 'list
+  :group 'popup-switcher)
+
 (defun psw-window-line-number ()
   (save-excursion
     (goto-char (window-start))
@@ -147,7 +157,8 @@ POSITION - if set, overrides `psw-popup-position' var value."
                                                 :fallback fallback)))
             target-item-name))
       (progn
-        (when (buffer-modified-p)
+        (when (and (buffer-modified-p)
+                   (not (member major-mode psw-uneditable-modes)))
           (delete-region (window-start) (window-end))
           (insert saved-text)
           (goto-char old-pos)
