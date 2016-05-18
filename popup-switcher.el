@@ -73,7 +73,8 @@ fill-column - centered relative to `fill-column'"
 (defcustom psw-uneditable-modes '(circe-channel-mode
                                   circe-query-mode
                                   circe-server-mode
-                                  slime-repl-mode)
+                                  slime-repl-mode
+                                  shell-mode)
   "List of major modes unsuitable to keep buffer text manually.
 Consequences of menu drawing and probable text changing should not be removed
 by buffer editing for this comint-like modes."
