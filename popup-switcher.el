@@ -273,7 +273,6 @@ SWITCHER - function, that describes what do with the selected item."
                                            (set-buffer-modified-p
                                             psw-buffer-modified)
                                            t)))
-
                      (when (kill-buffer buff)
                        (if (not same-buffer-p)
                            (progn
