@@ -245,10 +245,7 @@ SWITCHER - function, that describes what do with the selected item."
                              (1- buffer-name-length)
                              buffer-name-length))))))
 
-(defun psw-restore-menu ()
-  "Restore menu after the current buffer killed."
-  (remove-hook 'window-configuration-change-hook 'psw-restore-menu)
-  (psw-switch-buffer))
+(declare-function psw-restore-menu "popup-switcher")
 
 ;;;###autoload
 (defun psw-switch-buffer ()
@@ -289,6 +286,11 @@ SWITCHER - function, that describes what do with the selected item."
                            (popup-delete menu)
                            (add-hook 'window-configuration-change-hook
                                      'psw-restore-menu)))))))))
+
+(defun psw-restore-menu ()
+  "Restore menu after the current buffer killed."
+  (remove-hook 'window-configuration-change-hook 'psw-restore-menu)
+  (psw-switch-buffer))
 
 ;;;###autoload
 (defun psw-switch-recentf ()
