@@ -276,6 +276,9 @@ SWITCHER - function, that describes what do with the selected item."
                      (when (kill-buffer buff)
                        (if (not same-buffer-p)
                            (progn
+                             (if (= (1+ (popup-cursor menu))
+                                    (length (popup-list menu)))
+                                 (popup-previous menu))
                              (setf (popup-list menu)
                                    (remove buff (popup-list menu))
                                    (popup-original-list menu)
