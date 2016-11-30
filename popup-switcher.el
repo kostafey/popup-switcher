@@ -146,17 +146,18 @@ POSITION - if set, overrides `psw-popup-position' var value."
     (unwind-protect
         (progn
           (psw-copy-face 'popup-isearch-match 'flx-highlight-face)
-          (let* ((menu-pos (psw-popup-menu-point menu-height item-names-list position))
-                 (target-item-name (popup-menu* item-names-list
-                                                :point menu-pos
-                                                :height menu-height
-                                                :scroll-bar t
-                                                :margin-left 1
-                                                :margin-right 1
-                                                :around t
-                                                :isearch t
-                                                :fallback fallback)))
-            target-item-name))
+          (flet ((ask-user-about-supersession-threat (_)))
+            (let* ((menu-pos (psw-popup-menu-point menu-height item-names-list position))
+                   (target-item-name (popup-menu* item-names-list
+                                                  :point menu-pos
+                                                  :height menu-height
+                                                  :scroll-bar t
+                                                  :margin-left 1
+                                                  :margin-right 1
+                                                  :around t
+                                                  :isearch t
+                                                  :fallback fallback)))
+              target-item-name)))
       (progn
         (when (and (buffer-modified-p)
                    (not (member major-mode psw-uneditable-modes)))
