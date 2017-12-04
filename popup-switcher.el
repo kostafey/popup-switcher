@@ -326,11 +326,21 @@ SWITCHER - function, that describes what do with the selected item."
      :item-name-getter (psw-compose 'file-name-nondirectory 'car)
      :switcher (lambda (entity)
                  (let* ((entity-path (car entity))
-                        (entity-name (file-name-nondirectory entity-path)))
-                   (if (cadr entity) ; is a directory sign
-                       ;; is a directory
-                       (psw-navigate-files
-                        (expand-file-name entity-name start-path))
+                        (entity-name (file-name-nondirectory entity-path))
+                        (first-attrib (cadr entity)))
+                   ;; t for directory,
+                   ;; string (name linked to) for symbolic link,
+                   ;; or nil.
+                   (if first-attrib
+                       (if (stringp first-attrib)
+                           ;; is a link
+                           (progn
+                             (message (format "Open symbolic link to '%s'"
+                                              first-attrib))
+                             (find-file first-attrib))
+                         ;; is a directory
+                         (psw-navigate-files
+                          (expand-file-name entity-name start-path)))
                      ;; is a file
                      (find-file entity-path)))))))
 
