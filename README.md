@@ -101,6 +101,14 @@ Non-nil `psw-mark-modified-buffers` means mark modified buffers with star char
 (`*`) expect special beffers like `*Messages*` any time you call
 `psw-switch-buffer`.
 
+### Enter to dired-mode via psw-navigate-files
+
+```lisp
+(setq psw-enable-single-dot-to-navigate-files t)
+```
+Any time you run `psw-navigate-files` fn you can select dot '.'
+item which opens `dired-mode` for current directory.
+
 ## Usage
 
 List of interactive functions:
@@ -133,7 +141,7 @@ buffer by pressing <kbd>C-d</kbd> or <kbd>C-k</kbd>.
 
 ## License
 
-Copyright © 2013-2016 Kostafey <kostafey@gmail.com> and
+Copyright © 2013-2017 Kostafey <kostafey@gmail.com> and
 [contributors](https://github.com/kostafey/popup-switcher/contributors)
 
 Distributed under the General Public License 2.0+
