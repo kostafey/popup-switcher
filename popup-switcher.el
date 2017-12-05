@@ -84,7 +84,7 @@ by buffer editing for this comint-like modes."
 (defcustom psw-enable-single-dot-to-navigate-files nil
   "Add single dot '.' item to `psw-navigate-files' fn list.
 When t any time you run `psw-navigate-files' fn you can select this dot '.'
-item which opens `dired-mode' for current directory."
+item, which opens `dired-mode' for current directory."
   :type 'boolean
   :group 'popup-switcher)
 

@@ -106,8 +106,8 @@ Non-nil `psw-mark-modified-buffers` means mark modified buffers with star char
 ```lisp
 (setq psw-enable-single-dot-to-navigate-files t)
 ```
-Any time you run `psw-navigate-files` fn you can select dot '.'
-item which opens `dired-mode` for current directory.
+Any time you run `psw-navigate-files` fn you can select dot `.`
+item, which opens `dired-mode` for current directory.
 
 ## Usage
 
