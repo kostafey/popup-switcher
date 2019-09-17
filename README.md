@@ -113,13 +113,14 @@ item, which opens `dired-mode` for current directory.
 
 List of interactive functions:
 
- Command                       | Description
--------------------------------|------------------------------------------
- `psw-switch-buffer`           | switch buffers through popup menu
- `psw-switch-recentf`          | switch recent files
- `psw-navigate-files`          | simple file navigator
- `psw-switch-function`         | switch (navigate) through functions in the current buffer *(optional)*
- `psw-switch-projectile-files` | switch among projectile project files list *(optional)*
+ Command                          | Description
+----------------------------------|------------------------------------------
+ `psw-switch-buffer`              | switch buffers through popup menu
+ `psw-switch-recentf`             | switch recent files
+ `psw-navigate-files`             | simple file navigator
+ `psw-switch-function`            | switch (navigate) through functions in the current buffer *(optional)*
+ `psw-switch-projectile-files`    | switch among projectile project files list *(optional)*
+ `psw-switch-projectile-projects` | switch among projectile projects list and it's files *(optional)*
 
 Run <kbd>M-x psw-switch-buffer [RET]</kbd> (or your selected key).  Type some letters
 from the name of buffer of interest (since isearch is enabled on start) to
@@ -141,7 +142,7 @@ buffer by pressing <kbd>C-d</kbd> or <kbd>C-k</kbd>.
 
 ## License
 
-Copyright © 2013-2017 Kostafey <kostafey@gmail.com> and
+Copyright © 2013-2019 Kostafey <kostafey@gmail.com> and
 [contributors](https://github.com/kostafey/popup-switcher/contributors)
 
 Distributed under the General Public License 2.0+
