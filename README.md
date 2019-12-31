@@ -110,6 +110,14 @@ Non-nil `psw-mark-modified-buffers` means mark modified buffers with star char
 Any time you run `psw-navigate-files` fn you can select dot `.`
 item, which opens `dired-mode` for current directory.
 
+### Highlight previous buffer for psw-switch-buffer
+
+If you want to highlight previous buffer for `psw-switch-buffer` fn
+set `psw-highlight-previous-buffer` to `t`:
+```lisp
+(setq psw-highlight-previous-buffer t)
+```
+
 ## Usage
 
 List of interactive functions:
