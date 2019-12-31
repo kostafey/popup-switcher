@@ -17,6 +17,7 @@ for better sense.
   - [Fuzzy matching](#fuzzy-matching)
   - [Modified buffers marker](#modified-buffers-marker)
 - [Usage](#usage)
+- [Screenshots](#Screenshots)
 - [Requirements](#requirements)
 - [License](#license)
 
@@ -130,8 +131,16 @@ buffer.
 When you are in menu created by `psw-switch-buffer`, you can kill selected
 buffer by pressing <kbd>C-d</kbd> or <kbd>C-k</kbd>.
 
-<img src="https://dl.dropboxusercontent.com/u/820526/psw-switch-buffer.png" width="600" />
-<img src="https://dl.dropboxusercontent.com/u/820526/psw-switch-function.png" width="600" />
+## Screenshots
+
+Switch buffer (<code>psw-switch-buffer</code>)<br/>
+<img src="https://user-images.githubusercontent.com/1282079/71625114-cb39e000-2bee-11ea-95b8-afa74341a6cf.png" width="600" />
+<br/>Switch function (<code>psw-switch-function</code>)<br/>
+<img src="https://user-images.githubusercontent.com/1282079/71625295-b3169080-2bef-11ea-8860-3653cce62ca0.png" width="600" />
+<br/>Fuzzy matching for switch function<br/>
+<img src="https://user-images.githubusercontent.com/1282079/71626022-aac05480-2bf3-11ea-8e51-fd081da3b7db.png" width="600" />
+<br/>File navigator (<code>psw-navigate-files</code>)<br/>
+<img src="https://user-images.githubusercontent.com/1282079/71625459-a0508b80-2bf0-11ea-811e-49f2787b7ce1.png" width="600" />
 
 ## Requirements:
 
