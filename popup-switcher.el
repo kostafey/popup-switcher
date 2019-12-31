@@ -328,17 +328,23 @@ SWITCHER - function, that describes what do with the selected item."
 (defun psw-switch-projectile-projects ()
   (interactive)
   (psw-switcher
-   :items-list projectile-known-projects
-   :item-name-getter 'projectile-project-name
-   :switcher (lambda (p-root)
-               (psw-switcher
-                :items-list (projectile-project-files
-                             (expand-file-name p-root))
-                :item-name-getter 'identity
-                :switcher (lambda (file)
-                            (find-file
-                             (expand-file-name file
-                                               p-root)))))))
+   :items-list (sort
+                (cl-mapcar 'cons
+                           (mapcar 'projectile-project-name
+                                   projectile-known-projects)
+                           projectile-known-projects)
+                (lambda (p1 p2) (string-lessp (car p1) (car p2))))
+   :item-name-getter 'car
+   :switcher (lambda (p)
+               (let ((p-root (cdr p)))
+                 (psw-switcher
+                  :items-list (projectile-project-files
+                               (expand-file-name p-root))
+                  :item-name-getter 'identity
+                  :switcher (lambda (file)
+                              (find-file
+                               (expand-file-name file
+                                                 p-root))))))))
 
 ;;;###autoload
 (defun psw-navigate-files (&optional start-path)
