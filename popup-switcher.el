@@ -58,6 +58,7 @@ fill-column - centered relative to `fill-column'"
 
 (defcustom psw-mark-modified-buffers nil
   "Non-nil means mark modified buffers with star char (*)"
+  :type 'boolean
   :group 'popup-switcher)
 
 (defcustom psw-before-menu-hook nil
@@ -155,25 +156,24 @@ INITIAL-INDEX - if non-nil, provides an initial selected  menu item."
          (modified (buffer-modified-p))
          (saved-text (buffer-substring (window-start) (window-end)))
          (old-pos (point))
-         (inhibit-read-only t)
-         (psw-temp-face (psw-copy-face 'flx-highlight-face 'psw-temp-face)))
+         (inhibit-read-only t))
+    (psw-copy-face 'flx-highlight-face 'psw-temp-face)
     (setq psw-buffer-modified modified)
     (unwind-protect
         (progn
           (psw-copy-face 'popup-isearch-match 'flx-highlight-face)
-          (flet ((ask-user-about-supersession-threat (_)))
-            (let* ((menu-pos (psw-popup-menu-point menu-height item-names-list position))
-                   (target-item-name (popup-menu* item-names-list
-                                                  :point menu-pos
-                                                  :height menu-height
-                                                  :scroll-bar t
-                                                  :margin-left 1
-                                                  :margin-right 1
-                                                  :around t
-                                                  :isearch t
-                                                  :fallback fallback
-                                                  :initial-index initial-index)))
-              target-item-name)))
+          (let* ((menu-pos (psw-popup-menu-point menu-height item-names-list position))
+                 (target-item-name (popup-menu* item-names-list
+                                                :point menu-pos
+                                                :height menu-height
+                                                :scroll-bar t
+                                                :margin-left 1
+                                                :margin-right 1
+                                                :around t
+                                                :isearch t
+                                                :fallback fallback
+                                                :initial-index initial-index)))
+            target-item-name))
       (progn
         (when (and (buffer-modified-p)
                    (not (member major-mode psw-uneditable-modes)))
@@ -265,8 +265,6 @@ INITIAL-INDEX - if non-nil, provides an initial selected  menu item."
        (equal "*" (substring (buffer-name)
                              (1- buffer-name-length)
                              buffer-name-length))))))
-
-(declare-function psw-restore-menu "popup-switcher")
 
 ;;;###autoload
 (defun psw-switch-buffer ()
