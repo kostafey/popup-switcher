@@ -100,11 +100,25 @@ Highlight current buffer for `psw-switch-buffer' when nil (by default)."
     (goto-char (window-start))
     (line-number-at-pos)))
 
-(defun psw-get-buffer-list ()
+(cl-defun psw-is-temp-buffer (&optional buffer)
+  "Find buffers with names bounded with stars like *Messages* or *scratch*."
+  (with-current-buffer (or buffer (current-buffer))
+    (let ((buffer-name-length (length (buffer-name))))
+      (and
+       (equal "*" (substring (buffer-name) 0 1))
+       (equal "*" (substring (buffer-name)
+                             (1- buffer-name-length)
+                             buffer-name-length))))))
+
+(defun psw-get-buffer-list (file-buffers-only)
   (cl-remove-if (lambda (buf) (or (minibufferp buf)
                              (let ((buf-name (buffer-name buf)))
                                (and (>= (length buf-name) 2)
-                                    (equal (substring buf-name 0 2) " *")))))
+                                    (equal (substring buf-name 0 2) " *")))
+                             (if file-buffers-only
+                                 (or (not (with-current-buffer buf
+                                            (buffer-file-name)))
+                                     (psw-is-temp-buffer buf)))))
                 (buffer-list)))
 
 (defun psw-copy-face (old-face new-face)
@@ -256,21 +270,14 @@ INITIAL-INDEX - if non-nil, provides an initial selected  menu item."
                                  :initial-index initial-index))))
   (run-hooks 'psw-after-switch-hook))
 
-(cl-defun psw-is-temp-buffer (&optional buffer)
-  "Find buffers with names bounded with stars like *Messages* or *scratch*."
-  (with-current-buffer (or buffer (current-buffer))
-    (let ((buffer-name-length (length (buffer-name))))
-      (and
-       (equal "*" (substring (buffer-name) 0 1))
-       (equal "*" (substring (buffer-name)
-                             (1- buffer-name-length)
-                             buffer-name-length))))))
-
 ;;;###autoload
-(defun psw-switch-buffer ()
-  (interactive)
+(defun psw-switch-buffer (arg)
+  "Show buffers list menu to switch buffer.
+If ARG show only buffers with files and without * in the beginning and end of
+the buffer name."
+  (interactive "P")
   (psw-switcher
-   :items-list (psw-get-buffer-list)
+   :items-list (psw-get-buffer-list arg)
    :item-name-getter (lambda (buffer)
                        (with-current-buffer buffer
                          (if (and psw-mark-modified-buffers
