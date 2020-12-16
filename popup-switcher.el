@@ -1,6 +1,6 @@
 ;;; popup-switcher.el --- switch to other buffers and files via popup. -*- lexical-binding: t -*-
 
-;; Copyright (C) 2013-2019  Kostafey <kostafey@gmail.com>
+;; Copyright (C) 2013-2020  Kostafey <kostafey@gmail.com>
 
 ;; Author: Kostafey <kostafey@gmail.com>
 ;; URL: https://github.com/kostafey/popup-switcher
@@ -173,29 +173,32 @@ INITIAL-INDEX - if non-nil, provides an initial selected  menu item."
          (inhibit-read-only t))
     (psw-copy-face 'flx-highlight-face 'psw-temp-face)
     (setq psw-buffer-modified modified)
-    (unwind-protect
+    (save-excursion
+      (beginning-of-line)
+      (unwind-protect
+          (progn
+            (psw-copy-face 'popup-isearch-match 'flx-highlight-face)
+            (let* ((menu-pos (psw-popup-menu-point
+                              menu-height item-names-list position))
+                   (target-item-name (popup-menu* item-names-list
+                                                  :point menu-pos
+                                                  :height menu-height
+                                                  :scroll-bar t
+                                                  :margin-left 1
+                                                  :margin-right 1
+                                                  :around t
+                                                  :isearch t
+                                                  :fallback fallback
+                                                  :initial-index initial-index)))
+              target-item-name))
         (progn
-          (psw-copy-face 'popup-isearch-match 'flx-highlight-face)
-          (let* ((menu-pos (psw-popup-menu-point menu-height item-names-list position))
-                 (target-item-name (popup-menu* item-names-list
-                                                :point menu-pos
-                                                :height menu-height
-                                                :scroll-bar t
-                                                :margin-left 1
-                                                :margin-right 1
-                                                :around t
-                                                :isearch t
-                                                :fallback fallback
-                                                :initial-index initial-index)))
-            target-item-name))
-      (progn
-        (when (and (buffer-modified-p)
-                   (not (member major-mode psw-uneditable-modes)))
-          (delete-region (window-start) (window-end))
-          (insert saved-text)
-          (goto-char old-pos)
-          (set-buffer-modified-p modified))
-        (psw-copy-face 'psw-temp-face 'flx-highlight-face)))))
+          (when (and (buffer-modified-p)
+                     (not (member major-mode psw-uneditable-modes)))
+            (delete-region (window-start) (window-end))
+            (insert saved-text)
+            (goto-char old-pos)
+            (set-buffer-modified-p modified))
+          (psw-copy-face 'psw-temp-face 'flx-highlight-face))))))
 
 (defadvice popup-isearch-filter-list (around
                                       psw-popup-isearch-filter-list

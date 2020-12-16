@@ -159,7 +159,7 @@ Switch buffer (<code>psw-switch-buffer</code>)<br/>
 
 ## License
 
-Copyright © 2013-2019 Kostafey <kostafey@gmail.com> and
+Copyright © 2013-2020 Kostafey <kostafey@gmail.com> and
 [contributors](https://github.com/kostafey/popup-switcher/contributors)
 
 Distributed under the General Public License 2.0+
