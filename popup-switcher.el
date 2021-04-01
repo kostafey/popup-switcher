@@ -29,6 +29,7 @@
 (require 'artist)
 (require 'recentf)
 (require 'dash)                         ; use -mapcat inside psw-flatten-index
+(require 'imenu)
 
 (defgroup popup-switcher nil
   "Switch to other buffers and files via popup."
@@ -111,14 +112,15 @@ Highlight current buffer for `psw-switch-buffer' when nil (by default)."
                              (1- buffer-name-length)
                              buffer-name-length))))))
 
+(defun psw-get-buffer-list (file-buffers-only)
   (cl-remove-if (lambda (buf) (or (minibufferp buf)
-                             (let ((buf-name (buffer-name buf)))
-                               (and (>= (length buf-name) 2)
-                                    (equal (substring buf-name 0 2) " *")))
-                             (if file-buffers-only
-                                 (or (not (with-current-buffer buf
-                                            (buffer-file-name)))
-                                     (psw-is-temp-buffer buf)))))
+                                  (let ((buf-name (buffer-name buf)))
+                                    (and (>= (length buf-name) 2)
+                                         (equal (substring buf-name 0 2) " *")))
+                                  (if file-buffers-only
+                                      (or (not (with-current-buffer buf
+                                                 (buffer-file-name)))
+                                          (psw-is-temp-buffer buf)))))
                 (buffer-list)))
 
 (defun psw-copy-face (old-face new-face)
