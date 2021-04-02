@@ -346,7 +346,6 @@ Please install it to use this command"))
            (fboundp 'projectile-mode)
            (fboundp 'projectile-current-project-files)
            (fboundp 'projectile-project-root))
-
       (psw-switcher
        :items-list (let ((current-projectile-mode projectile-mode)
                          (files (projectile-current-project-files)))
